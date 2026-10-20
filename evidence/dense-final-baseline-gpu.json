@@ -1,0 +1,29 @@
+{
+  "conditions": "Chromium Pixel7 emulation CPU throttle 4x SwiftShader; gl.finish after each submitted frame ensures GPU command completion, not rAF callback counting or display presentation. Three active 4s samples.",
+  "results": [
+    {
+      "n": 75,
+      "t": 7776.39999999851,
+      "paths": "18",
+      "quality": "battery",
+      "renderer": "WebKit WebGL",
+      "completedDrawFps": 12.057086614173228
+    },
+    {
+      "n": 73,
+      "t": 7591,
+      "paths": "18",
+      "quality": "battery",
+      "renderer": "WebKit WebGL",
+      "completedDrawFps": 11.424313920278156
+    },
+    {
+      "n": 70,
+      "t": 7747.60000000149,
+      "paths": "18",
+      "quality": "battery",
+      "renderer": "WebKit WebGL",
+      "completedDrawFps": 11.471893860030105
+    }
+  ]
+}

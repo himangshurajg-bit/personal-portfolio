@@ -1,0 +1,27 @@
+{
+  "method": "gl.finish per observed frame, software-WebGL completed draw workloads; not scanout or physical-phone evidence. Shared-host variation is substantial; compare only conditions, not guaranteed gains.",
+  "results": {
+    "dense-final-baseline-gpu": {
+      "medianCompletedDrawFps": 11.471893860030105,
+      "range": [
+        11.424313920278156,
+        12.057086614173228
+      ]
+    },
+    "dense-final-gpu": {
+      "medianCompletedDrawFps": 12.852517363261363,
+      "range": [
+        10.1367221301876,
+        13.734579255865059
+      ]
+    },
+    "dense-unthrottled-gpu": {
+      "medianCompletedDrawFps": 21.629416005743803,
+      "range": [
+        14.438635797859098,
+        24.576734025150156
+      ]
+    }
+  },
+  "limitation": "60\u2013120fps not demonstrated on available software renderer; display pacing removes prior 30fps cap but cannot ensure hardware throughput."
+}
