@@ -31,9 +31,12 @@
   document.querySelector('.section-count').textContent = String(d.projects.length).padStart(2,'0') + ' PROJECTS / GITHUB';
   if(d.skills.length){ const skills=document.getElementById('skills'); skills.replaceChildren();d.skills.forEach(s=>skills.append(el('span','skill glass',s)));text('skills-note','Skills and areas I’m learning.'); }
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // Small stagger adds a flowing entrance without delaying access to content.
+  document.querySelectorAll('.project-card,.about-grid .info-card').forEach((n,i)=>n.style.setProperty('--reveal-delay',(i%3)*75+'ms'));
   if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(n=>observer.observe(n));}
   else document.querySelectorAll('.reveal').forEach(n=>n.classList.add('visible'));
-  window.setTimeout(()=>document.querySelector('.loading-screen').classList.add('loaded'), motion.matches ? 0 : 450);
+  window.setTimeout(()=>document.querySelector('.loading-screen').classList.add('loaded'), motion.matches ? 0 : 650);
+  document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('motion-paused',document.hidden));
   const menuButton = document.querySelector('.menu-button'), menu = document.getElementById('mobile-nav');
   const closeMenu=()=>{ menu.hidden=true; menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation'); };
   menuButton.addEventListener('click',()=>{ const opened=menuButton.getAttribute('aria-expanded')==='true';menu.hidden=opened;menuButton.setAttribute('aria-expanded',String(!opened));menuButton.setAttribute('aria-label',opened?'Open navigation':'Close navigation'); });
