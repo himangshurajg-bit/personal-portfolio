@@ -1,0 +1,5 @@
+{
+  "name":"himangshu-portfolio","version":"1.0.0","private":true,
+  "description":"Exportable liquid-glass personal portfolio. No runtime dependencies.",
+  "scripts":{"build":"node scripts/build.mjs","preview":"python3 -m http.server 4175 --directory dist"}
+}
