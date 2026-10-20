@@ -47,3 +47,13 @@ The hero includes a decorative 3D glass core built with CSS meridians and gyrosc
 A nonblocking fixed layer gives every primary pointer-down, including blank areas, a liquid-glass impact. It is capped at four live impacts, with six shards per impact, and cleans up each impact after 1.4 seconds. A single local illumination follows pointer contact/swipe and fades on release or native-scroll cancellation; a subtle edge light follows scrolling. No gesture is captured or prevented. Theme switches and local section links have temporary transitions. Continuous core motion pauses outside the hero viewport and when the document is hidden. Reduced-motion preferences disable the new motion and illumination; the static sculpture and content remain available without JavaScript.
 
 `tests/core-orb-check.cjs` covers core structure, blank-area and touch feedback, rapid-input cleanup, light following/fading, three theme palettes and persistence, navigation, offscreen pause, responsive overflow, reduced motion and no-JavaScript content/tag preservation. These checks use Chromium desktop and Pixel 7 emulation, not physical-device performance tests.
+
+## Interactive glass orb
+
+Choose **Explore the orb** for a separate, gesture-isolated explorer. Drag to rotate; pinch, wheel or +/− to zoom 1–4×. Double-tap a chosen point to zoom towards it. Pan mode (or Shift+drag) moves a magnified detail. Detail presets isolate the shell, lattice, rings and nucleus. Arrow keys rotate; Shift+arrows pan; +/− zoom; 0 resets; Space pauses motion; Escape exits. The orb is decorative artwork, not an AI service.
+
+The explorer module loads only on demand. Background motion pauses while it is open; touching the model pauses automatic motion. Reduced-motion settings and the readable no-JavaScript portfolio remain supported. Rendering is CSS 3D with no WebGL or external model dependency.
+
+Performance work removes the forced 800ms splash delay and invisible loader/backplate animations, reuses prerendered project cards, reduces simultaneous tap particles, and avoids animated full-page blur on coarse-pointer devices. There is no real-device frame-rate guarantee.
+
+`tests/atelier-check.cjs` covers interaction, accessibility, content and responsive behavior using Playwright Chromium (set `PLAYWRIGHT_MODULE` when using a nonlocal installation). `tests/orb-performance.cjs <static-root> <report-path>` records three CPU-throttled Pixel 7-emulated idle samples; these laboratory measurements are not physical-phone FPS.

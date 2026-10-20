@@ -1,0 +1,81 @@
+{
+  "conditions": "Local HTTP, Chromium Pixel 7 emulation, 4x CPU throttle, three 3-second hero idle samples; not physical device FPS",
+  "results": [
+    {
+      "dclMs": 401.5,
+      "loadMs": 433.20000000298023,
+      "loaderReleaseMs": 800,
+      "activeAnimations": 43,
+      "taskMs": 1627.1330000000003,
+      "layoutMs": 0,
+      "styleMs": 348.47499999999997,
+      "longTasks": [
+        244,
+        64,
+        54,
+        54,
+        59,
+        61,
+        51,
+        60,
+        72,
+        55,
+        59,
+        51,
+        54,
+        51
+      ],
+      "frameMedian": 83.40000000000009,
+      "bytes": 72685
+    },
+    {
+      "dclMs": 201.30000000074506,
+      "loadMs": 230,
+      "loaderReleaseMs": 800,
+      "activeAnimations": 43,
+      "taskMs": 1513.3769999999997,
+      "layoutMs": 0,
+      "styleMs": 330.367,
+      "longTasks": [
+        159,
+        61,
+        54,
+        53,
+        54,
+        63,
+        67,
+        58,
+        56
+      ],
+      "frameMedian": 83.39999999999964,
+      "bytes": 72685
+    },
+    {
+      "dclMs": 343.30000000074506,
+      "loadMs": 418.30000000074506,
+      "loaderReleaseMs": 800,
+      "activeAnimations": 43,
+      "taskMs": 1728.9540000000002,
+      "layoutMs": 0,
+      "styleMs": 297.46400000000006,
+      "longTasks": [
+        137,
+        197,
+        55,
+        50,
+        56,
+        60,
+        68,
+        70,
+        54,
+        51,
+        57,
+        62,
+        59,
+        60
+      ],
+      "frameMedian": 83.39999999999964,
+      "bytes": 72685
+    }
+  ]
+}

@@ -20,6 +20,6 @@ const cards=d.projects.map(p=>`<article class="project-card glass reveal"><div c
 html=html.replace('<div id="projects" class="project-grid"></div>',`<div id="projects" class="project-grid">${cards}</div>`);
 rmSync(dist,{recursive:true,force:true});mkdirSync(dist,{recursive:true});
 writeFileSync(new URL('index.html',dist),html);
-for(const filename of ['style.css','content.js','main.js','favicon.svg','sitemap.xml'])cpSync(new URL('site/'+filename,root),new URL(filename,dist));
+for(const filename of ['style.css','content.js','main.js','orb.js','favicon.svg','sitemap.xml'])cpSync(new URL('site/'+filename,root),new URL(filename,dist));
 cpSync(new URL('site/fonts/',root),new URL('fonts/',dist),{recursive:true});
 console.log('Built 6 static files into dist/, including prerendered portfolio content and sitemap. No runtime dependencies.');

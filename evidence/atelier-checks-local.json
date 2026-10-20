@@ -1,0 +1,24 @@
+{
+  "url": "http://localhost:34473/",
+  "passed": 17,
+  "checks": [
+    "Explorer code lazy-loaded; loader releases on first rendering opportunity and stops invisible animations",
+    "Own modal explorer opens with detailed 3D sculpture and keyboard focus",
+    "Drag rotates the sculpture independently and freezes automatic motion for inspection",
+    "Zoom controls safely clamp to 1–4x without zooming the webpage",
+    "Keyboard rotation, zoom and Shift-arrow panning work",
+    "Wheel zoom anchors to a chosen local point, rather than the page",
+    "Four detail presets focus shell, lattice, rings or nucleus with explanatory text",
+    "Motion toggle and reset restore a usable complete sculpture",
+    "Escape/Close return focus and repeated openings do not duplicate geometry",
+    "Explorer inherits all three themes and stored theme choice persists",
+    "Real browser touch events: two-finger pinch magnifies the sculpture in its isolated stage",
+    "Touch Pan mode and double-tap zoom inspect a selected portion",
+    "Closing restores ordinary page scroll and mobile navigation",
+    "No page or explorer horizontal overflow at seven widths 320–1440px",
+    "Reduced-motion keeps direct manual zoom/rotation usable without automatic motion",
+    "No-JavaScript content, contact links and decorative orb remain available without a dead control",
+    "Exact verification tag, canonical, sitemap and error-free execution preserved"
+  ],
+  "limits": "Chromium desktop/Pixel 7 touch emulation; no physical-device testing."
+}

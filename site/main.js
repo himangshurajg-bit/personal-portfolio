@@ -17,8 +17,8 @@
   };
   const el = (tag, className, value) => {const n = document.createElement(tag); if(className)n.className=className; if(value)n.textContent=value; return n;};
   const grid = document.getElementById('projects');
-  grid.replaceChildren(); // Static HTML remains available to crawlers and no-JavaScript visitors.
-  d.projects.forEach(p => {
+  const needsCards = !grid.querySelector('.project-card'); // Reuse prerendered content instead of rebuilding the same DOM.
+  if(needsCards) d.projects.forEach(p => {
     const card = el('article','project-card glass reveal');
     const visual = el('div','project-visual' + (p.visual === 'lecture' ? ' lecture-visual' : ''));
     visual.setAttribute('aria-hidden','true'); visual.innerHTML = visuals[p.visual] || visuals.orbit;
@@ -35,7 +35,7 @@
   document.querySelectorAll('.project-card,.about-grid .info-card').forEach((n,i)=>n.style.setProperty('--reveal-delay',(i%3)*75+'ms'));
   if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(n=>observer.observe(n));}
   else document.querySelectorAll('.reveal').forEach(n=>n.classList.add('visible'));
-  window.setTimeout(()=>{document.querySelector('.loading-screen').classList.add('loaded');document.documentElement.classList.add('entered');}, motion.matches ? 0 : 800);
+  requestAnimationFrame(()=>{document.querySelector('.loading-screen').classList.add('loaded');document.documentElement.classList.add('entered');window.loaderReleaseMs=performance.now();});
   document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('motion-paused',document.hidden));
   const menuButton = document.querySelector('.menu-button'), menu = document.getElementById('mobile-nav');
   const closeMenu=()=>{ menu.hidden=true; menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation'); };
@@ -44,6 +44,8 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();menuButton.focus();}});
   document.addEventListener('click',e=>{if(!menu.hidden&&!document.querySelector('.site-header').contains(e.target))closeMenu();});
   window.matchMedia('(min-width:681px)').addEventListener('change',e=>{if(e.matches)closeMenu();});
+  const orbOpen=document.getElementById('orb-open');let orbModule;
+  orbOpen.addEventListener('click',async()=>{orbOpen.disabled=true;try{orbModule ||= import('./orb.js');(await orbModule).openOrb();}catch{orbModule=null;orbOpen.textContent='Retry orb explorer';}finally{orbOpen.disabled=false;}});
   const themeButton=document.querySelector('.theme-button');
   const themeSelect=document.getElementById('theme-select');
   const setTheme=t=>{document.documentElement.dataset.theme=t;themeSelect.value=t;themeButton.setAttribute('aria-label','Switch to '+(t==='light'?'dark':'light')+' theme');};
@@ -84,21 +86,21 @@
   document.querySelectorAll('.hero-copy>.eyebrow,.hero-tagline,.hero-intro,.hero-actions,.hero-foot,.hero-art').forEach((n,i)=>{n.classList.add('enter-layer');n.style.setProperty('--entry',i);});
   // Run perpetual details only near the viewport, including after scrolling back.
   if('IntersectionObserver' in window){const activity=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('motion-active',e.isIntersecting)),{rootMargin:'90px'});document.querySelectorAll('.hero,.project-card,.info-card,.closing-section').forEach(n=>activity.observe(n));}
-  // Non-blocking glass impacts include empty areas; at most four live effects.
+  // Non-blocking glass impacts include empty areas; at most two live effects.
   const impactLayer=el('div','global-glass-fx'); impactLayer.setAttribute('aria-hidden','true');document.body.append(impactLayer);
   const impact=(event)=>{
-    if(motion.matches||event.isPrimary===false||event.button>0)return;
-    while(impactLayer.querySelectorAll('.glass-impact').length>=4)impactLayer.querySelector('.glass-impact').remove();
+    if(document.querySelector('#orb-dialog[open]')||motion.matches||event.isPrimary===false||event.button>0)return;
+    while(impactLayer.querySelectorAll('.glass-impact').length>=2)impactLayer.querySelector('.glass-impact').remove();
     const hit=el('span','glass-impact');hit.style.left=event.clientX+'px';hit.style.top=event.clientY+'px';
     hit.append(el('i','impact-lens'),el('i','impact-ring'),el('i','impact-ring two'));
-    for(let i=0;i<6;i++){const shard=el('i','impact-shard');shard.style.setProperty('--shard',i);hit.append(shard);}
+    for(let i=0;i<3;i++){const shard=el('i','impact-shard');shard.style.setProperty('--shard',i);hit.append(shard);}
     impactLayer.append(hit);window.setTimeout(()=>hit.remove(),1400);
   };
   document.addEventListener('pointerdown',impact,{passive:true});
   // One local light follows a press/swipe without capturing or cancelling the gesture.
   const touchLight=el('div','touch-illumination');touchLight.setAttribute('aria-hidden','true');impactLayer.append(touchLight);
   let lightPointer=null, lightFrame=0, lightTimer=0;
-  const illuminate=event=>{if(motion.matches)return;cancelAnimationFrame(lightFrame);lightFrame=requestAnimationFrame(()=>{touchLight.style.left=event.clientX+'px';touchLight.style.top=event.clientY+'px';touchLight.classList.add('illuminated');});};
+  const illuminate=event=>{if(motion.matches||document.querySelector('#orb-dialog[open]'))return;cancelAnimationFrame(lightFrame);lightFrame=requestAnimationFrame(()=>{touchLight.style.left=event.clientX+'px';touchLight.style.top=event.clientY+'px';touchLight.classList.add('illuminated');});};
   document.addEventListener('pointerdown',event=>{if(event.isPrimary===false||event.button>0||motion.matches)return;lightPointer=event.pointerId;clearTimeout(lightTimer);illuminate(event);},{passive:true});
   document.addEventListener('pointermove',event=>{if(event.pointerId===lightPointer)illuminate(event);},{passive:true});
   const dim=()=>{lightPointer=null;lightTimer=window.setTimeout(()=>touchLight.classList.remove('illuminated'),400);};
@@ -120,6 +122,7 @@
   document.querySelectorAll('a,button').forEach(control=>{
     const burst=(event)=>{
       if(motion.matches)return;
+      if(control.closest('#orb-dialog'))return;
       const rect=control.getBoundingClientRect();
       const x=event.clientX===0?rect.width/2:event.clientX-rect.left;
       const y=event.clientY===0?rect.height/2:event.clientY-rect.top;

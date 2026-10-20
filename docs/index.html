@@ -33,8 +33,8 @@
 <main id="main">
 <section id="top" class="hero">
 <div class="hero-copy"><div class="eyebrow"><span class="tiny-dot"></span> PERSONAL PORTFOLIO <span class="edition">/ 2026</span></div><h1 class="name-title"><span>Himangshu</span><span>Raj Gogoi<span class="name-dot">.</span></span></h1><p class="hero-tagline">Ideas, made tangible.</p><p class="hero-intro" id="intro">A selection of my GitHub projects — from personal AI tools to better ways to study.</p><div class="hero-actions"><a class="button primary" href="#work">Explore my work <span aria-hidden="true">↗</span></a><a class="button secondary glass-control" href="#about">A little about me <span aria-hidden="true">↓</span></a></div><div class="hero-foot"><span class="fine-line"></span> Curious by nature. Built one idea at a time.</div></div>
-<div class="hero-art" aria-hidden="true">
-<div class="depth-scene"><div class="ai-core" aria-hidden="true">
+<div class="hero-art">
+<div class="depth-scene" aria-hidden="true"><div class="ai-core" aria-hidden="true">
 <div class="core-aura"></div><div class="core-dial"><span>VISUAL CORE / 03</span><span>FORM · LIGHT · MOTION</span></div>
 <div class="core-assembly"><div class="core-ring ring-alpha"></div><div class="core-ring ring-beta"></div><div class="core-ring ring-gamma"></div>
 <div class="core-shell"><div class="core-grid"><i style="--meridian:0"></i><i style="--meridian:1"></i><i style="--meridian:2"></i><i style="--meridian:3"></i><i style="--meridian:4"></i><i style="--meridian:5"></i><i style="--meridian:6"></i></div><div class="core-light"></div><div class="core-scan"></div><div class="core-reflection"></div></div>
@@ -44,7 +44,8 @@
 <div class="glass-plane plane-middle"><span class="sculpture-word">make.</span><span class="plane-rule"></span></div>
 <div class="glass-plane plane-front"><span class="plane-caption">IDEAS INTO REALITY</span><span class="sculpture-symbol">↗</span><span class="plane-coordinate">EXPLORE · BUILD · REFINE</span></div>
 </div><div class="scene-shadow"></div></div>
-<div class="floating-note glass"><span class="note-orb"></span><div>Small ideas.<br><strong>Real possibilities.</strong></div><span class="note-star">✧</span></div><span class="art-index">FORM / 001<br>ALWAYS TAKING SHAPE</span>
+<div class="floating-note glass" aria-hidden="true"><span class="note-orb"></span><div>Small ideas.<br><strong>Real possibilities.</strong></div><span class="note-star">✧</span></div><span class="art-index">FORM / 001<br>ALWAYS TAKING SHAPE</span>
+<button type="button" class="orb-open glass-control" id="orb-open" aria-haspopup="dialog">Explore the orb <span aria-hidden="true">↗</span></button>
 </div>
 <a class="scroll-cue glass-control" href="#work"><span class="scroll-cue-mark" aria-hidden="true">↓</span><span>Scroll to explore</span></a>
 </section>
@@ -55,5 +56,11 @@ New Star Senior Secondary School</p></article><article class="info-card glass re
 <section id="contact" class="closing-section glass reveal"><div class="eyebrow">LET’S KEEP IN TOUCH</div><h2>Contact me<span class="heading-dot">.</span></h2><p class="contact-note">Have a question or an idea to share?<br>Send me an email — I’d love to hear from you.</p><a id="contact-link" class="button primary" href="mailto:himangshurajg@gmail.com">Email me <span aria-hidden="true">↗</span></a><a class="contact-address" href="mailto:himangshurajg@gmail.com">himangshurajg@gmail.com</a><p class="email-hint">Opens your email app.</p><div class="closing-orb" aria-hidden="true"></div></section>
 </main>
 <footer><a href="#top" class="footer-name">Himangshu Raj Gogoi</a><span>A personal collection of work & ideas.</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></footer>
+<dialog id="orb-dialog" class="orb-dialog" aria-labelledby="orb-view-title" aria-describedby="orb-help">
+<div class="orb-toolbar"><div><span class="orb-kicker">FORM / LIGHT / DEPTH</span><h3 id="orb-view-title">Glass core atelier<span>.</span></h3></div><button type="button" class="orb-close" aria-label="Close orb explorer">Close <span aria-hidden="true">×</span></button></div>
+<div class="orb-stage" tabindex="0" role="group" aria-label="Interactive orb. Drag to rotate; pinch to zoom. Arrow keys rotate, Shift and arrows pan, plus and minus zoom." aria-describedby="orb-help"><div class="orb-crosshair" aria-hidden="true"></div><div class="orb-model" aria-hidden="true"><div class="orb-rotation"></div></div><span class="orb-stage-note">DRAG TO ROTATE · PINCH TO EXPLORE</span><output class="orb-zoom-label" aria-label="Current zoom">1.0×</output></div>
+<div class="orb-bottom"><div class="orb-controls" aria-label="Orb controls"><button type="button" data-orb="out" aria-label="Zoom out">−</button><button type="button" data-orb="in" aria-label="Zoom in">+</button><button type="button" data-orb="mode" aria-pressed="false">Pan: off</button><button type="button" data-orb="play" aria-pressed="true">Motion: on</button><button type="button" data-orb="reset">Reset view</button></div>
+<div class="orb-details"><label>Inspect a detail <select id="orb-detail"><option value="whole">Whole sculpture</option><option value="shell">Glass shell</option><option value="grid">Meridian lattice</option><option value="rings">Gyroscopic rings</option><option value="core">Luminous nucleus</option></select></label><p id="orb-detail-copy">A layered glass sculpture. Select a detail to focus, or double-tap any point to zoom toward it.</p></div><p id="orb-help">Drag to rotate. Turn Pan on to move a zoomed detail. Pinch or use + / − to zoom (1–4×). Double-tap a point to inspect it. Escape closes; Reset restores the full view. Decorative artwork, not an AI assistant.</p><p class="orb-status sr-only" role="status"></p></div>
+</dialog>
 <noscript><p class="noscript">Project details and contact links work without JavaScript. Enable it for animations, theme switching and the mobile menu, or visit <a href="https://github.com/himangshurajg-bit">my GitHub profile</a>.</p></noscript>
 </body></html>
