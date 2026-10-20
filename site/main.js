@@ -67,7 +67,8 @@
   window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
   // Cinematic type remains one accessible label; decorative characters are hidden.
   document.querySelectorAll('.name-title>span,h2').forEach((heading,index)=>{
-    const label=heading.innerText; heading.setAttribute('aria-label',label);
+    const copy=heading.cloneNode(true); copy.querySelectorAll('br').forEach(br=>br.replaceWith(document.createTextNode('\n')));
+    const label=copy.textContent; heading.setAttribute('aria-label',label.replace(/\s+/g,' ').trim());
     const letters=el('span','kinetic-type'); letters.setAttribute('aria-hidden','true');
     [...label].forEach((char,i)=>{if(char==='\n'){letters.append(document.createElement('br'));return;}const span=el('span',char===' '?'kinetic-letter kinetic-space':'kinetic-letter',char===' '?'\u00a0':char);span.style.setProperty('--letter',i);letters.append(span);});
     heading.replaceChildren(letters);heading.classList.add('kinetic-heading');
