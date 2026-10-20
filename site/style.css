@@ -288,3 +288,5 @@ body,header,.glass,.glass-control,.project-body{transition:background-color 240m
 /* Native scrolling plus a single local, transform/opacity-only glass edge light. */
 .depth-scene{translate:0 var(--scroll-depth,0px)}.scroll-glass-light{position:fixed;right:-60px;top:25%;width:140px;height:45vh;pointer-events:none;z-index:4;background:radial-gradient(ellipse,rgba(var(--core-rgb),.15),transparent 70%);opacity:0;transition:opacity 250ms ease-out;contain:paint}.scroll-glass-light.scrolling{opacity:.75}.orb-exploring .scroll-glass-light,.previewing .scroll-glass-light{display:none}@media(max-width:680px){.scroll-glass-light{width:100px;right:-50px}}@media(prefers-reduced-motion:reduce){.scroll-glass-light{display:none}.depth-scene{translate:none}}
 @media(max-width:680px){html{scroll-padding-top:96px}}
+/* Expanded case studies should not stretch the neighbouring project into an empty panel. */
+.project-grid{align-items:start}
