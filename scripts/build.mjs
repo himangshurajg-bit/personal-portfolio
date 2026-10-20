@@ -10,4 +10,4 @@ const cards=d.projects.map(p=>`<article class="project-card glass reveal" data-p
 html=html.replace('<div id="projects" class="project-grid"></div>',`<div id="projects" class="project-grid">${cards}</div>`);
 rmSync(dist,{recursive:true,force:true});mkdirSync(dist,{recursive:true});writeFileSync(new URL('index.html',dist),html);
 for(const file of ['style.css','content.js','main.js','orb.js','favicon.svg','sitemap.xml','fonts','media','previews'])cpSync(new URL('site/'+file,root),new URL(file,dist),{recursive:true});
-console.log('Built progressive static portfolio, project evidence media and local lecture demo. Orb module stays lazy.');
+console.log('Built progressive static portfolio, project evidence media and local lecture demo. Home neural orb and on-demand explorer share a module.');

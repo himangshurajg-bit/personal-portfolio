@@ -1,4 +1,4 @@
-// On-demand, dependency-free WebGL geometry. No AI service, external model or renderer bundle.
+// Shared, dependency-free WebGL geometry. No AI service, external model or renderer bundle.
 let ready=false,open;
 export function openOrb(){if(!ready){open=initialize();ready=true}open()}
 function initialize(){
@@ -33,6 +33,37 @@ function initialize(){
  stage.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','0',' '].includes(e.key))return;e.preventDefault();const sign=e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1;if(e.key.startsWith('Arrow')){pause();if(e.shiftKey){if(e.key==='ArrowLeft'||e.key==='ArrowRight')panX+=sign*24;else panY+=sign*24}else if(e.key==='ArrowLeft'||e.key==='ArrowRight')y+=sign*12;else x=clamp(x-sign*12,-89,89)}if(e.key==='+'||e.key==='=')zoom(z*1.25);if(e.key==='-')zoom(z/1.25);if(e.key==='0')reset();if(e.key===' '&&!motion.matches)paused=!paused;schedule()});
  new ResizeObserver(schedule).observe(stage);new IntersectionObserver(es=>{inView=es[0].isIntersecting;if(!inView){cancelAnimationFrame(frame);frame=0;last=0}else schedule()},{root:dialog,threshold:0}).observe(stage);new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});motion.addEventListener('change',()=>{if(motion.matches)paused=true;schedule()});document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0}else schedule()});
  return()=>{inView=true;dialog.showModal();document.documentElement.classList.add('orb-exploring');stage.focus();stage.dataset.loop='active';copy.textContent=descriptions[detail.value];last=0;schedule()};
+}
+// Home scene is decorative and never captures touch/wheel events. Only one scene animates at a time.
+let heroMounted=false;
+export function mountHeroOrb(){
+ if(heroMounted)return;heroMounted=true;
+ const art=document.querySelector('.hero-art'),root=document.documentElement,motion=matchMedia('(prefers-reduced-motion: reduce)');
+ const stage=document.createElement('div');stage.className='hero-neural-stage';stage.setAttribute('aria-hidden','true');
+ const canvas=document.createElement('canvas');canvas.className='hero-neural-canvas';stage.append(canvas);art.prepend(stage);
+ const caption=document.createElement('span');caption.className='hero-neural-caption';caption.textContent='NEURAL LIGHT / GENERATIVE ART';caption.setAttribute('aria-hidden','true');
+ const toggle=document.createElement('button');toggle.className='hero-signal-toggle glass-control';toggle.type='button';toggle.setAttribute('aria-label','Toggle home orb neural light');
+ let renderer,frame=0,last=0,angle=.65,frames=0,inView=false,low=matchMedia('(pointer:coarse)').matches,slow=0,signals=true,failed=false;
+ const allowed=()=>!failed&&inView&&!document.hidden&&!root.classList.contains('orb-exploring')&&!root.classList.contains('previewing');
+ const animated=()=>allowed()&&!motion.matches&&!root.classList.contains('ambient-paused');
+ function stop(){cancelAnimationFrame(frame);frame=0;last=0;stage.dataset.loop='stopped'}
+ function draw(t){frame=0;if(!allowed()||!renderer)return;const elapsed=last?t-last:0;if(animated()&&last&&elapsed<33){frame=requestAnimationFrame(draw);return}if(animated()){angle+=Math.min(elapsed,70)*.00022;if(elapsed>65&&++slow>10)low=true}else slow=0;last=t;
+  renderer({x:-10,y:-15,z:.87,panX:0,panY:0,angle,wire:false,exploded:false,signals,part:'whole',low,ratio:low?.85:1.25});
+  stage.dataset.renderFrames=String(++frames);stage.dataset.loop=animated()?'active':'paused';
+  if(animated())frame=requestAnimationFrame(draw);
+ }
+ function sync(){stop();if(allowed()&&renderer)frame=requestAnimationFrame(draw)}
+ function fail(){failed=true;stop();canvas.hidden=true;art.classList.remove('hero-webgl');caption.remove();toggle.remove();stage.dataset.renderer='css-fallback'}
+ try{const gl=canvas.getContext('webgl',{alpha:true,antialias:true,powerPreference:'low-power'});if(!gl)throw Error('No WebGL');renderer=createRenderer(gl,canvas,{set textContent(v){stage.dataset.renderInfo=v}});stage.dataset.renderer='webgl';art.classList.add('hero-webgl');art.append(caption,toggle)}catch{fail();return}
+ function toggleUI(){toggle.textContent=signals?'Neural light: on':'Neural light: off';toggle.setAttribute('aria-pressed',String(signals))}toggleUI();toggle.addEventListener('click',()=>{signals=!signals;toggleUI();sync()});
+ new IntersectionObserver(es=>{inView=es[0].isIntersecting;sync()},{threshold:.05}).observe(stage);
+ new ResizeObserver(sync).observe(stage);
+ // Theme/class changes include global ambient pause and explorer/modal transitions.
+ new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['class','data-theme']});
+ motion.addEventListener('change',sync);document.addEventListener('visibilitychange',sync);
+ canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();fail()});
+ // A lost home context stays in CSS fallback for this visit; no repeated GPU reinitialization.
+
 }
 // Matrices use column-major storage; all surfaces have actual depth-tested vertices.
 function createRenderer(gl,canvas,info){
