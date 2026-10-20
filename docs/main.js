@@ -69,7 +69,7 @@
   document.querySelectorAll('.name-title>span,h2').forEach((heading,index)=>{
     const label=heading.innerText; heading.setAttribute('aria-label',label);
     const letters=el('span','kinetic-type'); letters.setAttribute('aria-hidden','true');
-    [...label].forEach((char,i)=>{if(char==='\n'){letters.append(document.createElement('br'));return;}const span=el('span','kinetic-letter',char===' '?'\u00a0':char);span.style.setProperty('--letter',i);letters.append(span);});
+    [...label].forEach((char,i)=>{if(char==='\n'){letters.append(document.createElement('br'));return;}const span=el('span',char===' '?'kinetic-letter kinetic-space':'kinetic-letter',char===' '?'\u00a0':char);span.style.setProperty('--letter',i);letters.append(span);});
     heading.replaceChildren(letters);heading.classList.add('kinetic-heading');
   });
   // Thin corner tracers sit inside the existing surface; no additional blur layers.

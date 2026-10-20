@@ -132,3 +132,5 @@ html:not(.js) .loading-screen{display:none}
 @media(prefers-reduced-motion:reduce){.kinetic-letter,.enter-layer{animation:none!important;opacity:1!important;transform:none!important}.js:not(.entered) .name-title .kinetic-letter,.js:not(.entered) .enter-layer,.js .reveal h2 .kinetic-letter{opacity:1;transform:none}.edge-corner,.loader-orbit,.loading-cube,.loader-caption,.orbit-ring,.orbit-core,.lecture-window{animation:none!important}.liquid-burst{display:none}.button:active{border-radius:inherit}}
 
 h2 .kinetic-type{white-space:normal}.name-title .kinetic-type{white-space:nowrap}
+
+.kinetic-space{min-width:.25em;letter-spacing:0}
