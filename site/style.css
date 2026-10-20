@@ -134,3 +134,5 @@ html:not(.js) .loading-screen{display:none}
 h2 .kinetic-type{white-space:normal}.name-title .kinetic-type{white-space:nowrap}
 
 .kinetic-space{min-width:.25em;letter-spacing:0}
+
+.about-heading h2 br{display:revert}
