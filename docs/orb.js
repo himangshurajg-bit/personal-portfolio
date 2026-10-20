@@ -49,7 +49,7 @@ export function mountHeroOrb(){
  const animated=()=>allowed()&&!motion.matches&&!root.classList.contains('ambient-paused');
  function stop(){cancelAnimationFrame(frame);frame=0;last=0;stage.dataset.loop='stopped'}
  function draw(t){frame=0;if(!allowed()||!renderer)return;const elapsed=last?t-last:0;if(animated()){angle+=Math.min(elapsed,70)*.00022;if(elapsed>27&&++slow>18)low=true}else slow=0;last=t;
-  renderer({x:-10,y:-15,z:.87,panX:0,panY:0,angle,wire:false,exploded:false,signals,part:'whole',low:preference==='low'||(preference==='auto'&&low),ratio:preference==='high'?1.5:low?.7:1.25});
+  renderer({x:-10,y:-15,z:.87,panX:0,panY:0,angle,wire:false,exploded:false,signals,part:'whole',low:preference==='low'||(preference==='auto'&&low),ratio:preference==='high'?1.5:(preference==='low'||low)?.7:1.25});
   stage.dataset.renderFrames=String(++frames);stage.dataset.loop=animated()?'active':'paused';
   if(animated())frame=requestAnimationFrame(draw);
  }
