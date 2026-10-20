@@ -44,6 +44,21 @@
   const setTheme=t=>{document.documentElement.dataset.theme=t;themeButton.setAttribute('aria-label','Switch to '+(t==='dark'?'light':'dark')+' theme');};
   try{const saved=localStorage.getItem('portfolio-theme');if(saved==='dark'||saved==='light')setTheme(saved);}catch{}
   themeButton.addEventListener('click',()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(t);try{localStorage.setItem('portfolio-theme',t);}catch{}});
+  // Pointer-driven depth is limited to precise pointers; touch stays scroll-friendly.
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const bindDepth = (node, xName, yName, amount) => {
+    let frame = 0;
+    const reset = () => { cancelAnimationFrame(frame); node.style.setProperty(xName,'0deg'); node.style.setProperty(yName,'0deg'); };
+    node.addEventListener('pointermove', event => {
+      if(motion.matches || !finePointer.matches) return;
+      const rect=node.getBoundingClientRect();
+      const x=(event.clientX-rect.left)/rect.width-.5, y=(event.clientY-rect.top)/rect.height-.5;
+      cancelAnimationFrame(frame); frame=requestAnimationFrame(()=>{node.style.setProperty(xName,(-y*amount)+'deg');node.style.setProperty(yName,(x*amount)+'deg');});
+    },{passive:true});
+    node.addEventListener('pointerleave',reset); motion.addEventListener('change',reset);
+  };
+  bindDepth(document.querySelector('.hero-art'),'--tilt-x','--tilt-y',12);
+  document.querySelectorAll('.project-card').forEach(card=>bindDepth(card,'--card-rx','--card-ry',5));
   let scheduled=false;const updateProgress=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;document.querySelector('.scroll-progress').style.transform='scaleX('+(max>0?window.scrollY/max:0)+')';scheduled=false;};
   window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
   document.querySelectorAll('a,button').forEach(control=>control.addEventListener('pointerdown',e=>{if(motion.matches)return;const rect=control.getBoundingClientRect();const ripple=el('span','tap-ripple');ripple.style.left=(e.clientX-rect.left-5)+'px';ripple.style.top=(e.clientY-rect.top-5)+'px';ripple.setAttribute('aria-hidden','true');control.append(ripple);ripple.addEventListener('animationend',()=>ripple.remove(),{once:true});}));

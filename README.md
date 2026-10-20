@@ -1,6 +1,6 @@
 # Himangshu Raj Gogoi — Personal portfolio
 
-Liquid-glass personal portfolio with responsive layout, light/dark themes, reduced-motion support, loading and scroll animations.
+Liquid-glass personal portfolio with an animated 3D name treatment, layered glass sculpture, pointer depth, responsive layout, light/dark themes, reduced-motion support, loading and scroll animations.
 
 Live site: https://himangshurajg-bit.github.io/personal-portfolio/
 
@@ -14,6 +14,6 @@ Preview locally with `npm run preview`, or serve `docs/` using `python3 -m http.
 
 ## Content boundaries
 
-Education and location were supplied by the owner. Personal skills, achievements and direct contact are unset; the contact section links to GitHub. Project language labels describe repository technologies, not a claimed personal skill list.
+Education and location were supplied by the owner. Personal skills and achievements are unset. The owner authorized the visible contact email `himangshurajg@gmail.com`; Email me opens a native mailto link, not a form or server-side delivery service. Project language labels describe repository technologies, not a claimed personal skill list.
 
 No backend, analytics, contact-form submissions, paid services or runtime dependencies.
