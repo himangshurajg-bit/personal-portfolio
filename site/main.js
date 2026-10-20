@@ -30,11 +30,28 @@
  preview.querySelector('.preview-close').addEventListener('click',()=>preview.close());preview.addEventListener('close',()=>{content.replaceChildren();content.classList.remove('image-enlarged');root.classList.remove('previewing');previewSource?.focus({preventScroll:true})});
  // True 3D renderer is only downloaded/initialized on explicit exploration.
  const orbOpen=document.getElementById('orb-open');let orbModule;orbOpen.addEventListener('click',async()=>{orbOpen.disabled=true;try{orbModule ||= import('./orb.js');(await orbModule).openOrb()}catch{orbModule=null;orbOpen.textContent='Retry orb explorer'}finally{orbOpen.disabled=false}});
- // Bounded elastic glass feedback, including empty areas. Never captures a gesture.
- const showTouch=(event,offsetX=0,offsetY=0)=>{if(event.isPrimary===false||event.button>0)return;while(document.querySelectorAll('.tap-glow').length>=2)document.querySelector('.tap-glow').remove();const glow=node('span','tap-glow'+(motion.matches?' calm':''));glow.setAttribute('aria-hidden','true');glow.style.left=(event.clientX+offsetX)+'px';glow.style.top=(event.clientY+offsetY)+'px';(document.querySelector('dialog[open]')||document.body).append(glow);setTimeout(()=>glow.remove(),motion.matches?160:650);const control=event.target.closest?.('a,button');if(control&&!motion.matches&&!control.disabled){control.getAnimations().filter(a=>a.id==='touch-spring').forEach(a=>a.cancel());const animation=control.animate([{scale:'1'},{scale:'.97',offset:.28},{scale:'1.012',offset:.65},{scale:'1'}],{duration:290,easing:'cubic-bezier(.22,.8,.25,1)'});animation.id='touch-spring';}};
+ // Compositor-driven glass wallpaper: actual perspective faces, no render loop or eager WebGL.
+ const backdrop=document.querySelector('.ambient');
+ const wallpaper=node('div','glass-wallpaper');wallpaper.setAttribute('aria-hidden','true');
+ for(let i=0;i<3;i++){const drift=node('div','wallpaper-drift drift-'+i),prism=node('div','wallpaper-prism');for(const face of ['front','back','left','right','top','bottom'])prism.append(node('i','prism-face face-'+face));drift.append(prism);wallpaper.append(drift)}
+ backdrop.append(wallpaper);
+ const motionToggle=node('button','ambient-toggle','Pause ambient motion');motionToggle.type='button';motionToggle.setAttribute('aria-pressed','false');motionToggle.setAttribute('aria-label','Pause ambient motion');document.body.append(motionToggle);
+ let ambientPaused=false;try{ambientPaused=localStorage.getItem('portfolio-ambient-paused')==='true'}catch{}
+ const syncMotion=()=>{root.classList.toggle('ambient-paused',ambientPaused);motionToggle.disabled=motion.matches;motionToggle.textContent=motion.matches?'Motion reduced':ambientPaused?'Resume ambient motion':'Pause ambient motion';motionToggle.setAttribute('aria-label',motionToggle.textContent);motionToggle.setAttribute('aria-pressed',String(ambientPaused||motion.matches));};syncMotion();
+ motionToggle.addEventListener('click',()=>{ambientPaused=!ambientPaused;try{localStorage.setItem('portfolio-ambient-paused',String(ambientPaused))}catch{}syncMotion()});motion.addEventListener('change',syncMotion);
+ const calmEffects=()=>motion.matches||ambientPaused;
+ const springControl=control=>{if(!control||calmEffects()||control.disabled)return;control.getAnimations().filter(a=>a.id==='touch-spring').forEach(a=>a.cancel());const animation=control.animate([{scale:'1'},{scale:'.94',offset:.24},{scale:'1.035',offset:.52},{scale:'.99',offset:.75},{scale:'1'}],{duration:420,easing:'cubic-bezier(.2,.75,.25,1)'});animation.id='touch-spring';};
+ // Two nonblocking glass lenses and viewport-spanning wave fronts, cleaned up after each tap.
+ const showTouch=(event,offsetX=0,offsetY=0)=>{if(event.isPrimary===false||event.button>0)return;const x=event.clientX+offsetX,y=event.clientY+offsetY,dialog=document.querySelector('dialog[open]');
+ while(document.querySelectorAll('.tap-glow').length>=2)document.querySelector('.tap-glow').remove();
+ const glow=node('span','tap-glow'+(calmEffects()?' calm':''));glow.setAttribute('aria-hidden','true');glow.style.left=x+'px';glow.style.top=y+'px';const host=dialog||document.body;let layer=host.querySelector(':scope > .touch-wave-layer');if(!layer){layer=node('div','touch-wave-layer');layer.setAttribute('aria-hidden','true');host.append(layer)}layer.append(glow);
+ if(!calmEffects()&&!event.target.closest?.('.orb-stage')){const wave=node('i','screen-wave');wave.style.setProperty('--wave-scale',String(Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))/70+1));glow.append(wave)}
+ setTimeout(()=>glow.remove(),calmEffects()?160:1150);springControl(event.target.closest?.('a,button,summary,select'));
+ };
  document.addEventListener('pointerdown',showTouch,{passive:true});
+ document.addEventListener('keydown',e=>{if(!e.repeat&&(e.key==='Enter'||e.key===' '))springControl(e.target.closest?.('a,button,summary'))});
  // The embedded demo is same-origin; relay pointer coordinates without preventing its controls.
  preview.addEventListener('close',()=>document.querySelectorAll('.tap-glow').forEach(n=>n.remove()));
  new MutationObserver(()=>{const iframe=content.querySelector('iframe');if(iframe&&!iframe.dataset.touchRelay){iframe.dataset.touchRelay='bound';iframe.addEventListener('load',()=>{try{iframe.contentDocument.addEventListener('pointerdown',e=>{const r=iframe.getBoundingClientRect();showTouch(e,r.left,r.top)},{passive:true})}catch{}})}}).observe(content,{childList:true});
- document.addEventListener('visibilitychange',()=>{root.classList.toggle('page-asleep',document.hidden);if(document.hidden)scrollLight.classList.remove('scrolling')});motion.addEventListener('change',()=>{if(motion.matches){document.querySelectorAll('.tap-glow').forEach(n=>n.remove());scrollLight.classList.remove('scrolling');scene.style.removeProperty('--scroll-depth')}});
+ document.addEventListener('visibilitychange',()=>{root.classList.toggle('page-asleep',document.hidden);if(document.hidden){scrollLight.classList.remove('scrolling');document.querySelectorAll('.tap-glow').forEach(n=>n.remove())}});motion.addEventListener('change',()=>{if(motion.matches){document.querySelectorAll('.tap-glow').forEach(n=>n.remove());scrollLight.classList.remove('scrolling');scene.style.removeProperty('--scroll-depth')}});
 })();

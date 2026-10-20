@@ -290,3 +290,53 @@ body,header,.glass,.glass-control,.project-body{transition:background-color 240m
 @media(max-width:680px){html{scroll-padding-top:96px}}
 /* Expanded case studies should not stretch the neighbouring project into an empty panel. */
 .project-grid{align-items:start}
+
+/* Luminous glass refinement. Continuous depth uses compositor transforms, not a second WebGL scene. */
+body{isolation:isolate}
+.ambient{position:fixed;inset:0;height:auto;z-index:-1;contain:strict;background:radial-gradient(ellipse at 78% 15%,rgba(var(--core-rgb),.12),transparent 56%),radial-gradient(ellipse at 12% 70%,rgba(var(--core-rgb),.07),transparent 50%)}
+.glass-wallpaper{position:absolute;inset:0;perspective:1200px;pointer-events:none;overflow:hidden}
+.wallpaper-drift{position:absolute;width:230px;height:230px;left:76%;top:18%;animation:wallpaper-drift 34s ease-in-out infinite;transform-style:preserve-3d}
+.wallpaper-prism{position:absolute;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(28deg) rotateY(-32deg) rotateZ(15deg);animation:wallpaper-turn 48s ease-in-out infinite}
+.prism-face{position:absolute;inset:0;display:block;border:1px solid rgba(var(--core-rgb),.16);border-radius:18px;background:linear-gradient(135deg,rgba(var(--core-bright),.16),rgba(var(--core-rgb),.025) 35%,rgba(var(--core-rgb),.07) 76%,rgba(var(--core-bright),.24));box-shadow:inset 1px 1px 0 rgba(var(--core-bright),.35);backface-visibility:visible}
+.face-front{transform:translateZ(115px)}.face-back{transform:rotateY(180deg) translateZ(115px)}.face-left{transform:rotateY(-90deg) translateZ(115px)}.face-right{transform:rotateY(90deg) translateZ(115px)}.face-top{transform:rotateX(90deg) translateZ(115px);background:linear-gradient(120deg,rgba(var(--core-bright),.28),rgba(var(--core-rgb),.035))}.face-bottom{transform:rotateX(-90deg) translateZ(115px)}
+.drift-1{left:-10%;top:66%;scale:.8;animation-duration:42s;animation-delay:-12s}.drift-1 .wallpaper-prism{animation-direction:reverse;animation-delay:-17s}
+.drift-2{left:53%;top:84%;scale:.45;animation-duration:38s;animation-delay:-7s}.drift-2 .wallpaper-prism{animation-delay:-26s}
+@keyframes wallpaper-drift{0%,100%{transform:translate3d(-10px,8px,0)}50%{transform:translate3d(25px,-38px,35px)}}
+@keyframes wallpaper-turn{0%,100%{transform:rotateX(28deg) rotateY(-32deg) rotateZ(15deg)}50%{transform:rotateX(50deg) rotateY(30deg) rotateZ(-7deg)}}
+/* Readable ink remains unchanged; soft light is behind, never over the letterforms. */
+.name-title:before{inset:-40px -5px;background:radial-gradient(ellipse at 32% 50%,rgba(var(--core-rgb),.32),rgba(var(--core-rgb),.12) 37%,transparent 72%);animation:name-radiance 12s ease-in-out infinite}
+.name-title>span{text-shadow:0 1px 0 rgba(var(--core-bright),.35),0 0 18px rgba(var(--core-rgb),.17)}
+.name-title:after{background:linear-gradient(105deg,transparent 31%,rgba(var(--core-bright),.08) 38%,rgba(var(--core-bright),.72) 46%,transparent 56%);animation-duration:12s}
+@keyframes name-radiance{0%,100%{opacity:.65;transform:translate3d(-5px,0,0) scale(.97)}50%{opacity:1;transform:translate3d(8px,-3px,0) scale(1.03)}}
+/* Tappable surfaces retain their own semantics and independent focus outline. */
+.button,.glass-control,.project-filters button,.preview-trigger,.preview-close,.preview-zoom,.orb-controls button,.orb-close,.orb-render-settings select,.orb-details select,.theme-select{box-shadow:inset 0 1px 1px rgba(var(--core-bright),.48),inset 0 -1px 1px rgba(var(--core-rgb),.1),0 4px 14px rgba(var(--core-rgb),.08)}
+.button:not(.primary),.glass-control,.project-filters button:not([aria-pressed="true"]),.preview-close,.preview-zoom,.orb-controls button,.ambient-toggle{background:linear-gradient(135deg,rgba(var(--core-bright),.16),var(--glass) 45%,rgba(var(--core-rgb),.065));border-color:rgba(var(--core-rgb),.24)}
+:is(a,button,summary,select):focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+@media(hover:hover){:is(.button,.glass-control,.project-filters button,.preview-trigger,.orb-controls button,.ambient-toggle):hover{box-shadow:inset 0 1px 1px rgba(var(--core-bright),.6),0 0 20px rgba(var(--core-rgb),.18),0 5px 14px var(--shadow)}}
+/* Child lens bounces locally; the independent wave travels to the farthest viewport corner. */
+.tap-glow{width:0;height:0;border:0;box-shadow:none;background:none;border-radius:0;contain:none;animation:none;transform:none;isolation:isolate}
+.tap-glow:before{content:"";position:absolute;left:-48px;top:-38px;width:96px;height:76px;border-radius:46% 54% 50% 50%;border:1px solid rgba(var(--core-bright),.7);background:radial-gradient(ellipse at 35% 30%,rgba(var(--core-bright),.48),rgba(var(--core-rgb),.19) 44%,transparent 74%);box-shadow:inset 0 1px 3px rgba(var(--core-bright),.6),0 0 18px rgba(var(--core-rgb),.1);animation:glass-tap-bounce 650ms ease-out both}
+.tap-glow:after{display:none}
+.screen-wave{position:absolute;left:-70px;top:-70px;width:140px;height:140px;border-radius:50%;border:1px solid rgba(var(--core-bright),.62);background:radial-gradient(circle,transparent 57%,rgba(var(--core-rgb),.025) 62%,rgba(var(--core-rgb),.1) 67%,rgba(var(--core-bright),.16) 69%,transparent 71%);pointer-events:none;animation:screen-wave-flow 1100ms cubic-bezier(.12,.48,.25,1) both;transform-origin:center}
+@keyframes glass-tap-bounce{0%{opacity:0;transform:scale(.3,.2)}25%{opacity:1;transform:scale(1.15,.8)}50%{opacity:.75;transform:scale(.93,1.1)}72%{opacity:.4;transform:scale(1.04,.96)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes screen-wave-flow{0%{opacity:.6;transform:scale(.15)}35%{opacity:.4}100%{opacity:0;transform:scale(var(--wave-scale,15))}}
+.tap-glow.calm{width:0;height:0;transform:none;opacity:1}.tap-glow.calm:before{width:44px;height:44px;left:-22px;top:-22px;animation:none;opacity:.3}
+.ambient-toggle{position:fixed;right:16px;bottom:14px;z-index:35;padding:9px 13px;min-height:40px;font:10px var(--sans);color:var(--ink);border:1px solid var(--line);border-radius:24px;background:var(--bg);box-shadow:inset 0 1px var(--highlight),0 3px 12px var(--shadow)}
+.ambient-toggle[aria-pressed="true"]{border-color:var(--accent)}
+.ambient-paused .glass-wallpaper *,.page-asleep .glass-wallpaper *,.previewing .glass-wallpaper *,.orb-exploring .glass-wallpaper *{animation-play-state:paused!important}
+.ambient-paused .name-title:before,.ambient-paused .name-title:after,.ambient-paused .hero-art *{animation-play-state:paused!important}
+@media(max-width:680px),(prefers-reduced-data:reduce){.drift-2{display:none}.wallpaper-drift{left:74%;top:25%;scale:.65;animation-duration:45s}.drift-1{left:-25%;top:80%;scale:.5}.ambient-toggle{font-size:9px;right:12px;bottom:10px;min-height:38px}}
+@media(prefers-reduced-motion:reduce){.glass-wallpaper *{animation:none!important}.wallpaper-prism{transform:rotateX(28deg) rotateY(-32deg) rotateZ(15deg)}.screen-wave{display:none!important}.name-title:before{animation:none!important;opacity:.65}.tap-glow{transform:none!important}.tap-glow:before{animation:none!important;opacity:.3;width:44px;height:44px;left:-22px;top:-22px}}
+@media(forced-colors:active){.glass-wallpaper,.screen-wave{display:none}.ambient-toggle{background:Canvas;color:CanvasText;border:1px solid CanvasText}}
+.touch-wave-layer{position:fixed;inset:0;overflow:hidden;contain:strict;pointer-events:none!important;z-index:99}.touch-wave-layer *{pointer-events:none!important}
+/* Cull back-facing panes and keep a single compositor animation per floating solid. */
+.wallpaper-drift{animation:none}.wallpaper-prism{animation:wallpaper-solid 42s ease-in-out infinite}.prism-face{backface-visibility:hidden}
+.drift-1 .wallpaper-prism{animation-duration:52s;animation-delay:-17s}.drift-2 .wallpaper-prism{animation-duration:47s;animation-delay:-26s}
+@keyframes wallpaper-solid{0%,100%{transform:translate3d(-10px,8px,0) rotateX(28deg) rotateY(-32deg) rotateZ(15deg)}50%{transform:translate3d(18px,-30px,35px) rotateX(50deg) rotateY(30deg) rotateZ(-7deg)}}
+.name-title:after{mask-image:radial-gradient(ellipse,#000 30%,transparent 72%);-webkit-mask-image:radial-gradient(ellipse,#000 30%,transparent 72%)}
+.hero-art .core-readout{display:none}
+/* Keep the scroll edge light wholly inside the viewport, including during resize. */
+.scroll-glass-light{right:0;width:80px;background:radial-gradient(ellipse at right,rgba(var(--core-rgb),.15),transparent 72%)}
+@media(max-width:680px){.scroll-glass-light{right:0;width:50px}}
+/* The moving name caustic stays inside its hero column at every viewport size. */
+.hero-copy{overflow:clip}
