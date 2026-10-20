@@ -45,9 +45,11 @@
   document.addEventListener('click',e=>{if(!menu.hidden&&!document.querySelector('.site-header').contains(e.target))closeMenu();});
   window.matchMedia('(min-width:681px)').addEventListener('change',e=>{if(e.matches)closeMenu();});
   const themeButton=document.querySelector('.theme-button');
-  const setTheme=t=>{document.documentElement.dataset.theme=t;themeButton.setAttribute('aria-label','Switch to '+(t==='dark'?'light':'dark')+' theme');};
-  try{const saved=localStorage.getItem('portfolio-theme');if(saved==='dark'||saved==='light')setTheme(saved);}catch{}
-  themeButton.addEventListener('click',()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(t);try{localStorage.setItem('portfolio-theme',t);}catch{}});
+  const themeSelect=document.getElementById('theme-select');
+  const setTheme=t=>{document.documentElement.dataset.theme=t;themeSelect.value=t;themeButton.setAttribute('aria-label','Switch to '+(t==='light'?'dark':'light')+' theme');};
+  try{const saved=localStorage.getItem('portfolio-theme');if(['dark','light','devil'].includes(saved))setTheme(saved);}catch{}
+  themeSelect.addEventListener('change',()=>{setTheme(themeSelect.value);try{localStorage.setItem('portfolio-theme',themeSelect.value);}catch{}});
+  themeButton.addEventListener('click',()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';setTheme(t);try{localStorage.setItem('portfolio-theme',t);}catch{}});
   // Pointer-driven depth is limited to precise pointers; touch stays scroll-friendly.
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
   const bindDepth = (node, xName, yName, amount) => {
@@ -90,9 +92,12 @@
       const x=event.clientX===0?rect.width/2:event.clientX-rect.left;
       const y=event.clientY===0?rect.height/2:event.clientY-rect.top;
       control.querySelectorAll('.liquid-burst').forEach(n=>n.remove());
-      const wave=el('span','liquid-burst');wave.setAttribute('aria-hidden','true');wave.style.left=x+'px';wave.style.top=y+'px';control.append(wave);
+      const devil=document.documentElement.dataset.theme==='devil';
+      const wave=el('span',devil?'liquid-burst devil-burst':'liquid-burst');
+      if(devil){for(let i=0;i<3;i++){const slash=el('i','devil-claw');slash.style.setProperty('--claw',i);wave.append(slash);}}wave.setAttribute('aria-hidden','true');wave.style.left=x+'px';wave.style.top=y+'px';control.append(wave);
       const size=Math.min(200,Math.max(rect.width,rect.height)*1.3);
-      const animation=wave.animate([{transform:'translate(-50%,-50%) scale(.05)',opacity:.85},{transform:'translate(-50%,-50%) scale(1)',opacity:0}],{duration:850,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
+      const frames=devil?[{transform:'translate(-50%,-50%) rotate(-18deg) scale(.08)',opacity:1,borderRadius:'45% 55% 44% 56%'},{transform:'translate(-50%,-45%) rotate(6deg) scale(.7)',opacity:.8,offset:.35,borderRadius:'30% 60% 55% 40%'},{transform:'translate(-50%,-25%) rotate(-4deg) scale(1)',opacity:0,borderRadius:'38% 42% 60% 65%'}]:[{transform:'translate(-50%,-50%) scale(.05)',opacity:.85},{transform:'translate(-50%,-50%) scale(1)',opacity:0}];
+      const animation=wave.animate(frames,{duration:devil?950:850,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
       wave.style.width=size+'px';wave.style.height=size+'px';animation.onfinish=()=>wave.remove();window.setTimeout(()=>wave.remove(),1100);
       if(control.matches('.button,.glass-control,.project-link'))control.animate([{scale:'1'},{scale:'.95',offset:.2},{scale:'1.025',offset:.55},{scale:'1'}],{duration:540,easing:'cubic-bezier(.22,1,.36,1)'});
     };
