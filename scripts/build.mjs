@@ -1,25 +1,13 @@
 import {cpSync, mkdirSync, rmSync, readFileSync, writeFileSync} from 'node:fs';
 import vm from 'node:vm';
-const root = new URL('../', import.meta.url);
-const dist = new URL('dist/', root);
-const context = {window:{}};
-vm.runInNewContext(readFileSync(new URL('site/content.js',root),'utf8'),context);
-const d=context.window.PORTFOLIO;
-const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const safeURL = value => {const url = new URL(value);if(url.protocol!=='https:')throw new Error('Expected public HTTPS project URL');return escape(url.href);};
-// Reuse the same decorative markup as the progressive enhancement code.
-const main = readFileSync(new URL('site/main.js',root),'utf8');
-const visualSource=main.match(/const visuals = (\{[\s\S]*?\n  \});/);
-if(!visualSource)throw new Error('Project visual definitions missing');
-const visuals=vm.runInNewContext('('+visualSource[1]+')');
+const root=new URL('../',import.meta.url),dist=new URL('dist/',root),context={window:{}};
+vm.runInNewContext(readFileSync(new URL('site/content.js',root),'utf8'),context);const d=context.window.PORTFOLIO;
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const link=u=>{if(!new URL(u,'https://example.test').protocol.match(/^https:$/))throw Error('Invalid URL');return esc(u)};
 let html=readFileSync(new URL('site/index.html',root),'utf8');
-for(const [id,value] of Object.entries({intro:d.introduction,'about-copy':d.about,education:d.education,achievements:d.achievements,location:d.location})){
-  if(value)html=html.replace(new RegExp('(<[^>]+id="'+id+'"[^>]*>)[\\s\\S]*?(</[^>]+>)'),(_,open,close)=>open+escape(value)+close);
-}
-const cards=d.projects.map(p=>`<article class="project-card glass reveal"><div class="project-visual${p.visual==='lecture'?' lecture-visual':''}" aria-hidden="true">${visuals[p.visual]||visuals.orbit}<span class="visual-label">${escape(p.language.toUpperCase())} / PROJECT STUDY</span></div><div class="project-body"><div class="project-category">${escape(p.category)}</div><h3 class="project-title">${escape(p.title)}</h3><p class="project-short">${escape(p.short)}</p><p class="project-description">${escape(p.description)}</p><div class="project-tags">${p.tags.map(t=>`<span>${escape(t)}</span>`).join('')}</div><a class="project-link" href="${safeURL(p.url)}" target="_blank" rel="noopener noreferrer" aria-label="View ${escape(p.title)} on GitHub (opens in a new tab)"><span>Explore repository</span><span class="link-circle glass-control">↗</span></a></div></article>`).join('');
+for(const [id,value] of Object.entries({intro:d.introduction,'about-copy':d.about,location:d.location}))html=html.replace(new RegExp('(<[^>]+id="'+id+'"[^>]*>)[\\s\\S]*?(</[^>]+>)'),(_,a,b)=>a+esc(value)+b);
+const cards=d.projects.map(p=>`<article class="project-card glass reveal" data-project="${p.id}" data-categories="${p.filters.join(' ')}"><div class="project-visual"><img src="${p.image}" alt="${esc(p.alt)}" width="1440" height="1050" loading="lazy" decoding="async"><button class="preview-trigger" data-preview="${p.id}" aria-label="Preview ${esc(p.title)}">${p.demo?'Try interactive preview':'Inspect the interface'} <span aria-hidden="true">↗</span></button></div><div class="project-body"><div class="project-category">${p.category}</div><h3 class="project-title">${esc(p.title)}</h3><p class="project-short">${esc(p.short)}</p><p class="project-description">${esc(p.description)}</p><div class="project-tags">${p.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div><p class="project-meta">Updated <time datetime="${p.updated}">20 Oct 2026</time> · ${esc(p.languages)}</p><div class="project-links"><a href="${link(p.url)}" target="_blank" rel="noopener noreferrer">GitHub ↗<span class="sr-only"> (opens in a new tab)</span></a>${p.demo?`<a href="${p.demo}" target="_blank" rel="noopener noreferrer">Live web demo ↗<span class="sr-only"> (opens in a new tab)</span></a>`:''}<a href="#case-${p.id}" data-case="${p.id}">Read case study ↓</a></div><details class="case-study" id="case-${p.id}"><summary>Inside the build</summary><dl><dt>The problem</dt><dd>${esc(p.problem)}</dd><dt>What I built</dt><dd>${esc(p.built)}</dd><dt>Technologies</dt><dd>${esc(p.tech)}</dd><dt>Engineering takeaway</dt><dd>${esc(p.takeaway)}</dd><dt>What’s still ahead</dt><dd>${esc(p.limit)}</dd></dl><p class="evidence-note">Based on <a href="${link(p.url+'/tree/'+p.commit)}" target="_blank" rel="noopener noreferrer">repository snapshot ${p.commit.slice(0,7)} ↗<span class="sr-only"> (opens in a new tab)</span></a>, checked 20 October 2026. Takeaways describe the implementation, not a claimed personal lesson.</p></details></div></article>`).join('');
 html=html.replace('<div id="projects" class="project-grid"></div>',`<div id="projects" class="project-grid">${cards}</div>`);
-rmSync(dist,{recursive:true,force:true});mkdirSync(dist,{recursive:true});
-writeFileSync(new URL('index.html',dist),html);
-for(const filename of ['style.css','content.js','main.js','orb.js','favicon.svg','sitemap.xml'])cpSync(new URL('site/'+filename,root),new URL(filename,dist));
-cpSync(new URL('site/fonts/',root),new URL('fonts/',dist),{recursive:true});
-console.log('Built 6 static files into dist/, including prerendered portfolio content and sitemap. No runtime dependencies.');
+rmSync(dist,{recursive:true,force:true});mkdirSync(dist,{recursive:true});writeFileSync(new URL('index.html',dist),html);
+for(const file of ['style.css','content.js','main.js','orb.js','favicon.svg','sitemap.xml','fonts','media','previews'])cpSync(new URL('site/'+file,root),new URL(file,dist),{recursive:true});
+console.log('Built progressive static portfolio, project evidence media and local lecture demo. Orb module stays lazy.');

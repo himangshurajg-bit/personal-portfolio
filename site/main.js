@@ -1,143 +1,40 @@
 (() => {
-  'use strict';
-  const d = window.PORTFOLIO;
-  if (!d) return;
-  document.documentElement.classList.add('js');
-  const text = (id, value) => { if(value) document.getElementById(id).textContent = value; };
-  text('intro', d.introduction); text('about-copy',d.about); text('education', d.education);
-  text('achievements',d.achievements); text('location',d.location);
-  if(d.about && d.education && d.achievements && d.location) document.getElementById('bio-status').hidden = true;
-  document.querySelector('.footer-name').textContent = d.name;
-  document.title = d.name + ' | Portfolio & GitHub Projects';
-  const safeURL = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : '#work'; } catch { return '#work'; } };
-  document.querySelectorAll('[data-github]').forEach(a => a.href = safeURL(d.github));
-  const visuals = {
-    orbit: '<div class="orbit-ring"></div><div class="orbit-ring two"></div><div class="orbit-ring three"></div><div class="orbit-core">ai.</div><span class="visual-bottom">PLAN → PREPARE → REVIEW</span><span class="visual-status">LOCAL-FIRST</span>',
-    lecture: '<div class="lecture-window"><div class="window-bar"><i></i><i></i><i></i></div><div class="window-content"><div class="mini-slide"><small>LECTURE / 01</small>A moment<br>of clarity.<div class="slide-line"></div></div><div class="mini-notes"><span></span><span></span><span class="active-line"></span><span></span><span></span></div></div></div><span class="visual-bottom">SEARCH → SEEK → STUDY</span><span class="visual-status">WEB TOOL</span>'
-  };
-  const el = (tag, className, value) => {const n = document.createElement(tag); if(className)n.className=className; if(value)n.textContent=value; return n;};
-  const grid = document.getElementById('projects');
-  const needsCards = !grid.querySelector('.project-card'); // Reuse prerendered content instead of rebuilding the same DOM.
-  if(needsCards) d.projects.forEach(p => {
-    const card = el('article','project-card glass reveal');
-    const visual = el('div','project-visual' + (p.visual === 'lecture' ? ' lecture-visual' : ''));
-    visual.setAttribute('aria-hidden','true'); visual.innerHTML = visuals[p.visual] || visuals.orbit;
-    visual.append(el('span','visual-label', p.language.toUpperCase() + ' / PROJECT STUDY'));
-    const body=el('div','project-body'); body.append(el('div','project-category',p.category),el('h3','project-title',p.title),el('p','project-short',p.short),el('p','project-description',p.description));
-    const tags = el('div','project-tags'); p.tags.forEach(t=>tags.append(el('span','',t))); body.append(tags);
-    const a=el('a','project-link'); a.href=safeURL(p.url); a.target='_blank'; a.rel='noopener noreferrer'; a.setAttribute('aria-label','View '+p.title+' on GitHub (opens in a new tab)');
-    a.append(el('span','','Explore repository'),el('span','link-circle glass-control','↗'));body.append(a); card.append(visual,body);grid.append(card);
-  });
-  document.querySelector('.section-count').textContent = String(d.projects.length).padStart(2,'0') + ' PROJECTS / GITHUB';
-  if(d.skills.length){ const skills=document.getElementById('skills'); skills.replaceChildren();d.skills.forEach(s=>skills.append(el('span','skill glass',s)));text('skills-note','Skills and areas I’m learning.'); }
-  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  // Small stagger adds a flowing entrance without delaying access to content.
-  document.querySelectorAll('.project-card,.about-grid .info-card').forEach((n,i)=>n.style.setProperty('--reveal-delay',(i%3)*75+'ms'));
-  if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(n=>observer.observe(n));}
-  else document.querySelectorAll('.reveal').forEach(n=>n.classList.add('visible'));
-  requestAnimationFrame(()=>{document.querySelector('.loading-screen').classList.add('loaded');document.documentElement.classList.add('entered');window.loaderReleaseMs=performance.now();});
-  document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('motion-paused',document.hidden));
-  const menuButton = document.querySelector('.menu-button'), menu = document.getElementById('mobile-nav');
-  const closeMenu=()=>{ menu.hidden=true; menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation'); };
-  menuButton.addEventListener('click',()=>{ const opened=menuButton.getAttribute('aria-expanded')==='true';menu.hidden=opened;menuButton.setAttribute('aria-expanded',String(!opened));menuButton.setAttribute('aria-label',opened?'Open navigation':'Close navigation'); });
-  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();menuButton.focus();}});
-  document.addEventListener('click',e=>{if(!menu.hidden&&!document.querySelector('.site-header').contains(e.target))closeMenu();});
-  window.matchMedia('(min-width:681px)').addEventListener('change',e=>{if(e.matches)closeMenu();});
-  const orbOpen=document.getElementById('orb-open');let orbModule;
-  orbOpen.addEventListener('click',async()=>{orbOpen.disabled=true;try{orbModule ||= import('./orb.js');(await orbModule).openOrb();}catch{orbModule=null;orbOpen.textContent='Retry orb explorer';}finally{orbOpen.disabled=false;}});
-  const themeButton=document.querySelector('.theme-button');
-  const themeSelect=document.getElementById('theme-select');
-  const setTheme=t=>{document.documentElement.dataset.theme=t;themeSelect.value=t;themeButton.setAttribute('aria-label','Switch to '+(t==='light'?'dark':'light')+' theme');};
-  try{const saved=localStorage.getItem('portfolio-theme');if(['dark','light','devil'].includes(saved))setTheme(saved);}catch{}
-  themeSelect.addEventListener('change',()=>{setTheme(themeSelect.value);try{localStorage.setItem('portfolio-theme',themeSelect.value);}catch{}});
-  themeButton.addEventListener('click',()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';setTheme(t);try{localStorage.setItem('portfolio-theme',t);}catch{}});
-  // Pointer-driven depth is limited to precise pointers; touch stays scroll-friendly.
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
-  const bindDepth = (node, xName, yName, amount) => {
-    let frame = 0;
-    const reset = () => { cancelAnimationFrame(frame); node.style.setProperty(xName,'0deg'); node.style.setProperty(yName,'0deg'); };
-    node.addEventListener('pointermove', event => {
-      if(motion.matches || !finePointer.matches) return;
-      const rect=node.getBoundingClientRect();
-      const x=(event.clientX-rect.left)/rect.width-.5, y=(event.clientY-rect.top)/rect.height-.5;
-      cancelAnimationFrame(frame); frame=requestAnimationFrame(()=>{node.style.setProperty(xName,(-y*amount)+'deg');node.style.setProperty(yName,(x*amount)+'deg');});
-    },{passive:true});
-    node.addEventListener('pointerleave',reset); motion.addEventListener('change',reset);
-  };
-  bindDepth(document.querySelector('.hero-art'),'--tilt-x','--tilt-y',12);
-  document.querySelectorAll('.project-card').forEach(card=>bindDepth(card,'--card-rx','--card-ry',5));
-  let scheduled=false;const updateProgress=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;document.querySelector('.scroll-progress').style.transform='scaleX('+(max>0?window.scrollY/max:0)+')';scheduled=false;};
-  window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
-  // Cinematic type remains one accessible label; decorative characters are hidden.
-  document.querySelectorAll('.name-title>span,h2').forEach((heading,index)=>{
-    const copy=heading.cloneNode(true); copy.querySelectorAll('br').forEach(br=>br.replaceWith(document.createTextNode('\n')));
-    const label=copy.textContent; heading.setAttribute('aria-label',label.replace(/\s+/g,' ').trim());
-    const letters=el('span','kinetic-type'); letters.setAttribute('aria-hidden','true');
-    [...label].forEach((char,i)=>{if(char==='\n'){letters.append(document.createElement('br'));return;}const span=el('span',char===' '?'kinetic-letter kinetic-space':'kinetic-letter',char===' '?'\u00a0':char);span.style.setProperty('--letter',i);letters.append(span);});
-    heading.replaceChildren(letters);heading.classList.add('kinetic-heading');
-  });
-  // Thin corner tracers sit inside the existing surface; no additional blur layers.
-  document.querySelectorAll('.project-card,.info-card,.closing-section,.glass-plane').forEach(surface=>{
-    const frame=el('span','liquid-edges');frame.setAttribute('aria-hidden','true');
-    for(let i=0;i<4;i++){const corner=el('i','edge-corner');corner.style.setProperty('--corner',i);frame.append(corner);}
-    surface.append(frame);
-  });
-  document.querySelectorAll('.hero-copy>.eyebrow,.hero-tagline,.hero-intro,.hero-actions,.hero-foot,.hero-art').forEach((n,i)=>{n.classList.add('enter-layer');n.style.setProperty('--entry',i);});
-  // Run perpetual details only near the viewport, including after scrolling back.
-  if('IntersectionObserver' in window){const activity=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('motion-active',e.isIntersecting)),{rootMargin:'90px'});document.querySelectorAll('.hero,.project-card,.info-card,.closing-section').forEach(n=>activity.observe(n));}
-  // Non-blocking glass impacts include empty areas; at most two live effects.
-  const impactLayer=el('div','global-glass-fx'); impactLayer.setAttribute('aria-hidden','true');document.body.append(impactLayer);
-  const impact=(event)=>{
-    if(document.querySelector('#orb-dialog[open]')||motion.matches||event.isPrimary===false||event.button>0)return;
-    while(impactLayer.querySelectorAll('.glass-impact').length>=2)impactLayer.querySelector('.glass-impact').remove();
-    const hit=el('span','glass-impact');hit.style.left=event.clientX+'px';hit.style.top=event.clientY+'px';
-    hit.append(el('i','impact-lens'),el('i','impact-ring'),el('i','impact-ring two'));
-    for(let i=0;i<3;i++){const shard=el('i','impact-shard');shard.style.setProperty('--shard',i);hit.append(shard);}
-    impactLayer.append(hit);window.setTimeout(()=>hit.remove(),1400);
-  };
-  document.addEventListener('pointerdown',impact,{passive:true});
-  // One local light follows a press/swipe without capturing or cancelling the gesture.
-  const touchLight=el('div','touch-illumination');touchLight.setAttribute('aria-hidden','true');impactLayer.append(touchLight);
-  let lightPointer=null, lightFrame=0, lightTimer=0;
-  const illuminate=event=>{if(motion.matches||document.querySelector('#orb-dialog[open]'))return;cancelAnimationFrame(lightFrame);lightFrame=requestAnimationFrame(()=>{touchLight.style.left=event.clientX+'px';touchLight.style.top=event.clientY+'px';touchLight.classList.add('illuminated');});};
-  document.addEventListener('pointerdown',event=>{if(event.isPrimary===false||event.button>0||motion.matches)return;lightPointer=event.pointerId;clearTimeout(lightTimer);illuminate(event);},{passive:true});
-  document.addEventListener('pointermove',event=>{if(event.pointerId===lightPointer)illuminate(event);},{passive:true});
-  const dim=()=>{lightPointer=null;lightTimer=window.setTimeout(()=>touchLight.classList.remove('illuminated'),400);};
-  document.addEventListener('pointerup',dim,{passive:true});document.addEventListener('pointercancel',dim,{passive:true});
-  const scrollLight=el('div','scroll-illumination');scrollLight.setAttribute('aria-hidden','true');document.body.append(scrollLight);let scrollTimer=0;
-  window.addEventListener('scroll',()=>{if(motion.matches)return;scrollLight.classList.add('illuminated');clearTimeout(scrollTimer);scrollTimer=window.setTimeout(()=>scrollLight.classList.remove('illuminated'),180);},{passive:true});
-
-  document.addEventListener('click',event=>{
-    const link=event.target.closest('a[href^="#"]');if(!link||motion.matches)return;
-    const target=document.getElementById(link.getAttribute('href').slice(1));if(!target)return;
-    target.classList.remove('section-arriving');void target.offsetWidth;target.classList.add('section-arriving');
-    window.setTimeout(()=>target.classList.remove('section-arriving'),1100);
-  });
-  const themeWash=()=>{if(motion.matches)return;document.querySelectorAll('.theme-wash').forEach(n=>n.remove());const wash=el('div','theme-wash');wash.setAttribute('aria-hidden','true');document.body.append(wash);window.setTimeout(()=>wash.remove(),900);};
-  themeSelect.addEventListener('change',themeWash);themeButton.addEventListener('click',themeWash);
-  document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('page-asleep',document.hidden));
-  motion.addEventListener('change',()=>{if(motion.matches){impactLayer.querySelectorAll('.glass-impact').forEach(n=>n.remove());cancelAnimationFrame(lightFrame);lightPointer=null;touchLight.classList.remove('illuminated');scrollLight.classList.remove('illuminated');document.querySelectorAll('.theme-wash').forEach(n=>n.remove());}});
-  // Bounded double-wave refraction and a damped press, for touch AND mouse.
-  document.querySelectorAll('a,button').forEach(control=>{
-    const burst=(event)=>{
-      if(motion.matches)return;
-      if(control.closest('#orb-dialog'))return;
-      const rect=control.getBoundingClientRect();
-      const x=event.clientX===0?rect.width/2:event.clientX-rect.left;
-      const y=event.clientY===0?rect.height/2:event.clientY-rect.top;
-      control.querySelectorAll('.liquid-burst').forEach(n=>n.remove());
-      const devil=document.documentElement.dataset.theme==='devil';
-      const wave=el('span',devil?'liquid-burst devil-burst':'liquid-burst');
-      if(devil){for(let i=0;i<3;i++){const slash=el('i','devil-claw');slash.style.setProperty('--claw',i);wave.append(slash);}}wave.setAttribute('aria-hidden','true');wave.style.left=x+'px';wave.style.top=y+'px';control.append(wave);
-      const size=Math.min(200,Math.max(rect.width,rect.height)*1.3);
-      const frames=devil?[{transform:'translate(-50%,-50%) rotate(-18deg) scale(.08)',opacity:1,borderRadius:'45% 55% 44% 56%'},{transform:'translate(-50%,-45%) rotate(6deg) scale(.7)',opacity:.8,offset:.35,borderRadius:'30% 60% 55% 40%'},{transform:'translate(-50%,-25%) rotate(-4deg) scale(1)',opacity:0,borderRadius:'38% 42% 60% 65%'}]:[{transform:'translate(-50%,-50%) scale(.05)',opacity:.85},{transform:'translate(-50%,-50%) scale(1)',opacity:0}];
-      const animation=wave.animate(frames,{duration:devil?950:850,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
-      wave.style.width=size+'px';wave.style.height=size+'px';animation.onfinish=()=>wave.remove();window.setTimeout(()=>wave.remove(),1100);
-      if(control.matches('.button,.glass-control,.project-link'))control.animate([{scale:'1'},{scale:'.95',offset:.2},{scale:'1.025',offset:.55},{scale:'1'}],{duration:540,easing:'cubic-bezier(.22,1,.36,1)'});
-    };
-    control.addEventListener('pointerdown',burst,{passive:true});
-    control.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')burst({clientX:0,clientY:0});});
-  });
-  motion.addEventListener('change',()=>{if(motion.matches){document.querySelectorAll('.liquid-burst').forEach(n=>n.remove());document.getAnimations().filter(a=>a.effect?.target?.classList?.contains('liquid-burst')).forEach(a=>a.cancel());}});
+ 'use strict';const d=window.PORTFOLIO;if(!d)return;
+ const root=document.documentElement,motion=matchMedia('(prefers-reduced-motion: reduce)');root.classList.add('js');
+ requestAnimationFrame(()=>{root.classList.add('entered');window.loaderReleaseMs=performance.now()});
+ // Short, one-time content entrances. Text is visible even before the script runs.
+ const observed=document.querySelectorAll('.section-heading,.about-heading,.toolkit-section>.section-intro,.project-card,.info-card,.closing-section');
+ document.querySelectorAll('.project-card,.about-grid .info-card,.toolkit-grid .info-card').forEach((n,i)=>n.style.setProperty('--reveal-delay',(i%4)*55+'ms'));
+ if('IntersectionObserver'in window){const reveal=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');reveal.unobserve(e.target)}}),{threshold:.06});observed.forEach(n=>reveal.observe(n));const activity=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('motion-active',e.isIntersecting)),{rootMargin:'30px'});activity.observe(document.querySelector('.hero'));}else observed.forEach(n=>n.classList.add('visible'));
+ const menu=document.getElementById('mobile-nav'),menuButton=document.querySelector('.menu-button');
+ const closeMenu=()=>{menu.hidden=true;menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation')};
+ menuButton.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menu.hidden=!open;menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Close navigation':'Open navigation')});
+ menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();menuButton.focus()}});document.addEventListener('click',e=>{if(!menu.hidden&&!e.target.closest('.site-header'))closeMenu()});matchMedia('(min-width:681px)').addEventListener('change',e=>{if(e.matches)closeMenu()});
+ // Persist three themes; a short colour transition, never a full-screen wash.
+ const picker=document.getElementById('theme-select'),themeButton=document.querySelector('.theme-button');
+ const setTheme=t=>{root.dataset.theme=t;picker.value=t;themeButton.setAttribute('aria-label','Switch to '+(t==='light'?'dark':'light')+' theme');try{localStorage.setItem('portfolio-theme',t)}catch{}};
+ setTheme(['light','dark','devil'].includes(root.dataset.theme)?root.dataset.theme:'light');picker.addEventListener('change',()=>setTheme(picker.value));themeButton.addEventListener('click',()=>setTheme(root.dataset.theme==='light'?'dark':'light'));
+ // One scheduled scroll read updates both progress and the active-section underline.
+ const scrollLight=document.createElement('div');scrollLight.className='scroll-glass-light';scrollLight.setAttribute('aria-hidden','true');document.body.append(scrollLight);let scrollDim=0;const scene=document.querySelector('.depth-scene');
+ const nav=document.querySelector('.desktop-nav'),indicator=nav.querySelector('.nav-indicator'),navLinks=[...nav.querySelectorAll('a')],sections=[...document.querySelectorAll('main>section[id]')];let queued=false,active='';
+ function syncNav(){queued=false;const y=scrollY+150;let id='';sections.forEach(s=>{if(s.offsetTop<=y)id=s.id});if(id==='top')id='';if(innerHeight+scrollY>=document.documentElement.scrollHeight-8)id='contact';if(id!==active){active=id;document.querySelectorAll('.desktop-nav a,.mobile-nav a').forEach(a=>{if(a.hash==='#'+id)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')})}const a=navLinks.find(a=>a.hash==='#'+id);indicator.style.opacity=a?'1':'0';if(a){indicator.style.width=a.offsetWidth+'px';indicator.style.transform=`translateX(${a.offsetLeft}px)`}const max=root.scrollHeight-innerHeight;document.querySelector('.scroll-progress').style.transform=`scaleX(${max>0?scrollY/max:0})`;}
+ addEventListener('scroll',()=>{if(!queued){queued=true;requestAnimationFrame(()=>{syncNav();if(!motion.matches&&!document.hidden){scrollLight.classList.add('scrolling');scrollLight.style.transform=`translate3d(0,${Math.min(100,scrollY*.035)}px,0)`;if(document.querySelector('.hero').classList.contains('motion-active'))scene.style.setProperty('--scroll-depth',Math.min(12,scrollY*.025)+'px');clearTimeout(scrollDim);scrollDim=setTimeout(()=>scrollLight.classList.remove('scrolling'),170)}})}},{passive:true});addEventListener('resize',syncNav);document.fonts.ready.then(syncNav);syncNav();
+ // Filters work locally and announce results; without JavaScript all projects stay visible.
+ const filters=document.querySelectorAll('[data-filter]'),cards=[...document.querySelectorAll('[data-project]')];
+ filters.forEach(button=>button.addEventListener('click',()=>{filters.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));let count=0;cards.forEach(card=>{const show=button.dataset.filter==='all'||card.dataset.categories.split(' ').includes(button.dataset.filter);card.hidden=!show;if(show)count++});document.getElementById('filter-status').textContent=`${count} project${count===1?'':'s'} shown.`;syncNav()}));
+ document.querySelectorAll('[data-case]').forEach(a=>a.addEventListener('click',()=>{document.getElementById('case-'+a.dataset.case).open=true}));
+ // On-demand previews: actual pinned web build for Lecture, actual screenshot for Agent.
+ const preview=document.getElementById('project-preview'),content=document.getElementById('preview-content');let previewSource;
+ const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text)el.textContent=text;return el};
+ document.querySelectorAll('[data-preview]').forEach(button=>button.addEventListener('click',()=>{previewSource=button;const p=d.projects.find(p=>p.id===button.dataset.preview);document.getElementById('preview-title').textContent=p.title;content.replaceChildren();const note=node('p','preview-note',p.demo?'Working web snapshot. Try a sample transcript, search and save a note. Personal files stay in this preview’s memory; export notes before closing. No Android transcription here.':'Actual screenshot of the local Python web studio. This image is inspectable, not a running assistant. The full application runs locally; there is no hosted agent backend.');content.append(note);if(p.demo){const frame=document.createElement('iframe');frame.title='Interactive lecture-slide-finder web preview';frame.src=p.demo;frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-downloads allow-modals');content.append(frame)}else{const img=document.createElement('img');img.src=p.image;img.alt=p.alt;img.className='preview-image';const button=node('button','preview-zoom','Enlarge screenshot');button.setAttribute('aria-pressed','false');button.addEventListener('click',()=>{const on=content.classList.toggle('image-enlarged');button.textContent=on?'Fit screenshot':'Enlarge screenshot';button.setAttribute('aria-pressed',String(on))});content.append(button,img)}const links=node('div','preview-links');const a=node('a','button secondary',p.demo?'Open full web demo ↗':'Open GitHub project ↗');a.href=p.demo||p.url;a.target='_blank';a.rel='noopener noreferrer';links.append(a);content.append(links);preview.showModal();root.classList.add('previewing');preview.querySelector('.preview-close').focus()}));
+ preview.querySelector('.preview-close').addEventListener('click',()=>preview.close());preview.addEventListener('close',()=>{content.replaceChildren();content.classList.remove('image-enlarged');root.classList.remove('previewing');previewSource?.focus({preventScroll:true})});
+ // True 3D renderer is only downloaded/initialized on explicit exploration.
+ const orbOpen=document.getElementById('orb-open');let orbModule;orbOpen.addEventListener('click',async()=>{orbOpen.disabled=true;try{orbModule ||= import('./orb.js');(await orbModule).openOrb()}catch{orbModule=null;orbOpen.textContent='Retry orb explorer'}finally{orbOpen.disabled=false}});
+ // Bounded elastic glass feedback, including empty areas. Never captures a gesture.
+ const showTouch=(event,offsetX=0,offsetY=0)=>{if(event.isPrimary===false||event.button>0)return;while(document.querySelectorAll('.tap-glow').length>=2)document.querySelector('.tap-glow').remove();const glow=node('span','tap-glow'+(motion.matches?' calm':''));glow.setAttribute('aria-hidden','true');glow.style.left=(event.clientX+offsetX)+'px';glow.style.top=(event.clientY+offsetY)+'px';(document.querySelector('dialog[open]')||document.body).append(glow);setTimeout(()=>glow.remove(),motion.matches?160:650);const control=event.target.closest?.('a,button');if(control&&!motion.matches&&!control.disabled){control.getAnimations().filter(a=>a.id==='touch-spring').forEach(a=>a.cancel());const animation=control.animate([{scale:'1'},{scale:'.97',offset:.28},{scale:'1.012',offset:.65},{scale:'1'}],{duration:290,easing:'cubic-bezier(.22,.8,.25,1)'});animation.id='touch-spring';}};
+ document.addEventListener('pointerdown',showTouch,{passive:true});
+ // The embedded demo is same-origin; relay pointer coordinates without preventing its controls.
+ preview.addEventListener('close',()=>document.querySelectorAll('.tap-glow').forEach(n=>n.remove()));
+ new MutationObserver(()=>{const iframe=content.querySelector('iframe');if(iframe&&!iframe.dataset.touchRelay){iframe.dataset.touchRelay='bound';iframe.addEventListener('load',()=>{try{iframe.contentDocument.addEventListener('pointerdown',e=>{const r=iframe.getBoundingClientRect();showTouch(e,r.left,r.top)},{passive:true})}catch{}})}}).observe(content,{childList:true});
+ document.addEventListener('visibilitychange',()=>{root.classList.toggle('page-asleep',document.hidden);if(document.hidden)scrollLight.classList.remove('scrolling')});motion.addEventListener('change',()=>{if(motion.matches){document.querySelectorAll('.tap-glow').forEach(n=>n.remove());scrollLight.classList.remove('scrolling');scene.style.removeProperty('--scroll-depth')}});
 })();
