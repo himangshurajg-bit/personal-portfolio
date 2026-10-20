@@ -1,0 +1,25 @@
+/* Scoped arrival artwork only. Nothing hides, reflows or locks the page. */
+.arrival{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden;contain:strict;--arrival-ink:#38877f;--arrival-glass:rgba(215,239,232,.56);animation:arrival-away 1.75s ease both}
+[data-theme="dark"] .arrival{--arrival-ink:#91e8e2;--arrival-glass:rgba(8,27,35,.55)}
+[data-theme="devil"] .arrival{--arrival-ink:#ff6275;--arrival-glass:rgba(48,7,19,.55)}
+.arrival-art{position:absolute;inset:0;color:var(--arrival-ink);perspective:900px}
+.arrival-pane{position:absolute;width:54vw;height:120vh;top:-10vh;border:1px solid color-mix(in srgb,var(--arrival-ink) 35%,transparent);background:linear-gradient(130deg,transparent 5%,var(--arrival-glass) 65%,transparent);box-shadow:0 0 36px color-mix(in srgb,var(--arrival-ink) 10%,transparent);animation:arrival-pane 1.65s cubic-bezier(.2,.7,.2,1) both}
+.arrival-pane-a{left:-10vw;--arrival-x:-85%;--arrival-r:-20deg;transform-origin:left center}
+.arrival-pane-b{right:-10vw;--arrival-x:85%;--arrival-r:20deg;transform-origin:right center}
+.arrival-orbit{position:absolute;left:72%;top:46%;width:clamp(240px,33vw,460px);aspect-ratio:1;transform:translate(-50%,-50%);animation:arrival-emerge 1.6s ease both}
+.arrival-orbit svg{width:100%;height:100%;stroke-width:1.2;filter:drop-shadow(0 0 5px currentColor);animation:arrival-turn 1.7s cubic-bezier(.16,.7,.2,1) both}
+.arrival-signal{stroke-dasharray:550;stroke-dashoffset:550;stroke-width:2;animation:arrival-trace 1.3s ease both}
+.arrival-monogram{position:absolute;inset:0;display:grid;place-content:center;font:300 clamp(54px,6vw,82px)/1 Georgia,serif;text-shadow:0 0 26px currentColor}
+.arrival-monogram span{position:absolute;left:56%;top:46%;font-size:.7em}
+.arrival-label{position:absolute;bottom:8%;width:100%;text-align:center;font:9px/1.4 monospace;letter-spacing:.26em}
+.arrival-horizon{position:absolute;left:0;top:70%;height:1px;width:100%;background:linear-gradient(90deg,transparent,currentColor,transparent);opacity:.6;transform-origin:center;animation:arrival-sweep 1.5s ease both;box-shadow:0 0 12px currentColor}
+.arrival-skip{pointer-events:auto;position:absolute;right:22px;bottom:76px;padding:9px 15px;border:1px solid currentColor;border-radius:99px;color:var(--arrival-ink);background:var(--arrival-glass);font:11px/1.3 monospace;cursor:pointer}
+.arrival-skip:focus-visible{outline:3px solid currentColor;outline-offset:4px}
+@keyframes arrival-pane{0%{opacity:0;transform:translateX(0) rotateY(0)}18%{opacity:.75}100%{opacity:0;transform:translateX(var(--arrival-x)) rotateY(var(--arrival-r))}}
+@keyframes arrival-emerge{0%{opacity:0;translate:0 15px;scale:.86}22%,60%{opacity:.9}100%{opacity:0;translate:0 -12px;scale:1.12}}
+@keyframes arrival-turn{from{transform:rotate(-35deg) rotateX(35deg)}to{transform:rotate(40deg) rotateX(-10deg)}}
+@keyframes arrival-trace{0%{stroke-dashoffset:550}70%,100%{stroke-dashoffset:0}}
+@keyframes arrival-sweep{0%{transform:scaleX(0);translate:0 40px;opacity:0}30%{opacity:.6}100%{transform:scaleX(1);translate:0 -110px;opacity:0}}
+@keyframes arrival-away{0%,75%{opacity:1}100%{opacity:0}}
+@media(max-width:680px){.arrival-orbit{left:75%;top:34%;width:240px}.arrival-skip{right:16px;bottom:70px}.arrival-pane{width:65vw}}
+@media(prefers-reduced-motion:reduce){.arrival{display:none}}
