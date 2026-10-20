@@ -8,7 +8,7 @@
   text('achievements',d.achievements); text('location',d.location);
   if(d.about && d.education && d.achievements && d.location) document.getElementById('bio-status').hidden = true;
   document.querySelector('.footer-name').textContent = d.name;
-  document.title = d.name + ' — Selected work';
+  document.title = d.name + ' | Portfolio & GitHub Projects';
   const safeURL = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : '#work'; } catch { return '#work'; } };
   document.querySelectorAll('[data-github]').forEach(a => a.href = safeURL(d.github));
   const visuals = {
@@ -17,6 +17,7 @@
   };
   const el = (tag, className, value) => {const n = document.createElement(tag); if(className)n.className=className; if(value)n.textContent=value; return n;};
   const grid = document.getElementById('projects');
+  grid.replaceChildren(); // Static HTML remains available to crawlers and no-JavaScript visitors.
   d.projects.forEach(p => {
     const card = el('article','project-card glass reveal');
     const visual = el('div','project-visual' + (p.visual === 'lecture' ? ' lecture-visual' : ''));

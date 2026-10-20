@@ -57,3 +57,6 @@
 @media(max-width:950px) and (min-width:681px){.name-title{font-size:58px;letter-spacing:-2px}}
 @media(max-width:680px){.name-title{font-size:clamp(48px,13.4vw,78px);letter-spacing:-2px;margin-top:25px;line-height:1.12}.hero-tagline{font-size:22px;margin-top:17px}.name-title>span{text-shadow:1px 1px #eff9ec,2px 2px #b4cfc1,3px 3px #7c9d8a,5px 8px 12px #365b4222}}
 @media(prefers-reduced-motion:reduce){.name-title>span{animation:none!important;filter:none}.name-title>span:after{display:none}}
+
+/* Static portfolio remains readable when scripts are disabled or fail to load. */
+html:not(.js) .loading-screen{display:none}
