@@ -84,6 +84,38 @@
   document.querySelectorAll('.hero-copy>.eyebrow,.hero-tagline,.hero-intro,.hero-actions,.hero-foot,.hero-art').forEach((n,i)=>{n.classList.add('enter-layer');n.style.setProperty('--entry',i);});
   // Run perpetual details only near the viewport, including after scrolling back.
   if('IntersectionObserver' in window){const activity=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('motion-active',e.isIntersecting)),{rootMargin:'90px'});document.querySelectorAll('.hero,.project-card,.info-card,.closing-section').forEach(n=>activity.observe(n));}
+  // Non-blocking glass impacts include empty areas; at most four live effects.
+  const impactLayer=el('div','global-glass-fx'); impactLayer.setAttribute('aria-hidden','true');document.body.append(impactLayer);
+  const impact=(event)=>{
+    if(motion.matches||event.isPrimary===false||event.button>0)return;
+    while(impactLayer.querySelectorAll('.glass-impact').length>=4)impactLayer.querySelector('.glass-impact').remove();
+    const hit=el('span','glass-impact');hit.style.left=event.clientX+'px';hit.style.top=event.clientY+'px';
+    hit.append(el('i','impact-lens'),el('i','impact-ring'),el('i','impact-ring two'));
+    for(let i=0;i<6;i++){const shard=el('i','impact-shard');shard.style.setProperty('--shard',i);hit.append(shard);}
+    impactLayer.append(hit);window.setTimeout(()=>hit.remove(),1400);
+  };
+  document.addEventListener('pointerdown',impact,{passive:true});
+  // One local light follows a press/swipe without capturing or cancelling the gesture.
+  const touchLight=el('div','touch-illumination');touchLight.setAttribute('aria-hidden','true');impactLayer.append(touchLight);
+  let lightPointer=null, lightFrame=0, lightTimer=0;
+  const illuminate=event=>{if(motion.matches)return;cancelAnimationFrame(lightFrame);lightFrame=requestAnimationFrame(()=>{touchLight.style.left=event.clientX+'px';touchLight.style.top=event.clientY+'px';touchLight.classList.add('illuminated');});};
+  document.addEventListener('pointerdown',event=>{if(event.isPrimary===false||event.button>0||motion.matches)return;lightPointer=event.pointerId;clearTimeout(lightTimer);illuminate(event);},{passive:true});
+  document.addEventListener('pointermove',event=>{if(event.pointerId===lightPointer)illuminate(event);},{passive:true});
+  const dim=()=>{lightPointer=null;lightTimer=window.setTimeout(()=>touchLight.classList.remove('illuminated'),400);};
+  document.addEventListener('pointerup',dim,{passive:true});document.addEventListener('pointercancel',dim,{passive:true});
+  const scrollLight=el('div','scroll-illumination');scrollLight.setAttribute('aria-hidden','true');document.body.append(scrollLight);let scrollTimer=0;
+  window.addEventListener('scroll',()=>{if(motion.matches)return;scrollLight.classList.add('illuminated');clearTimeout(scrollTimer);scrollTimer=window.setTimeout(()=>scrollLight.classList.remove('illuminated'),180);},{passive:true});
+
+  document.addEventListener('click',event=>{
+    const link=event.target.closest('a[href^="#"]');if(!link||motion.matches)return;
+    const target=document.getElementById(link.getAttribute('href').slice(1));if(!target)return;
+    target.classList.remove('section-arriving');void target.offsetWidth;target.classList.add('section-arriving');
+    window.setTimeout(()=>target.classList.remove('section-arriving'),1100);
+  });
+  const themeWash=()=>{if(motion.matches)return;document.querySelectorAll('.theme-wash').forEach(n=>n.remove());const wash=el('div','theme-wash');wash.setAttribute('aria-hidden','true');document.body.append(wash);window.setTimeout(()=>wash.remove(),900);};
+  themeSelect.addEventListener('change',themeWash);themeButton.addEventListener('click',themeWash);
+  document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('page-asleep',document.hidden));
+  motion.addEventListener('change',()=>{if(motion.matches){impactLayer.querySelectorAll('.glass-impact').forEach(n=>n.remove());cancelAnimationFrame(lightFrame);lightPointer=null;touchLight.classList.remove('illuminated');scrollLight.classList.remove('illuminated');document.querySelectorAll('.theme-wash').forEach(n=>n.remove());}});
   // Bounded double-wave refraction and a damped press, for touch AND mouse.
   document.querySelectorAll('a,button').forEach(control=>{
     const burst=(event)=>{

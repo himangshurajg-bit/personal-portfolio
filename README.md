@@ -38,3 +38,12 @@ Official guidance:
 - https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl
 - https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 - https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt
+
+
+## Visual core and touch lighting
+
+The hero includes a decorative 3D glass core built with CSS meridians and gyroscopic rings. It is not an AI assistant, microphone, connection status or functional AI feature. Light, Dark and Red devil each tint the core and all interaction lighting. No additional external dependency or service is used.
+
+A nonblocking fixed layer gives every primary pointer-down, including blank areas, a liquid-glass impact. It is capped at four live impacts, with six shards per impact, and cleans up each impact after 1.4 seconds. A single local illumination follows pointer contact/swipe and fades on release or native-scroll cancellation; a subtle edge light follows scrolling. No gesture is captured or prevented. Theme switches and local section links have temporary transitions. Continuous core motion pauses outside the hero viewport and when the document is hidden. Reduced-motion preferences disable the new motion and illumination; the static sculpture and content remain available without JavaScript.
+
+`tests/core-orb-check.cjs` covers core structure, blank-area and touch feedback, rapid-input cleanup, light following/fading, three theme palettes and persistence, navigation, offscreen pause, responsive overflow, reduced motion and no-JavaScript content/tag preservation. These checks use Chromium desktop and Pixel 7 emulation, not physical-device performance tests.
