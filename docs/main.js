@@ -35,7 +35,7 @@
   document.querySelectorAll('.project-card,.about-grid .info-card').forEach((n,i)=>n.style.setProperty('--reveal-delay',(i%3)*75+'ms'));
   if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.08});document.querySelectorAll('.reveal').forEach(n=>observer.observe(n));}
   else document.querySelectorAll('.reveal').forEach(n=>n.classList.add('visible'));
-  window.setTimeout(()=>document.querySelector('.loading-screen').classList.add('loaded'), motion.matches ? 0 : 650);
+  window.setTimeout(()=>{document.querySelector('.loading-screen').classList.add('loaded');document.documentElement.classList.add('entered');}, motion.matches ? 0 : 800);
   document.addEventListener('visibilitychange',()=>document.documentElement.classList.toggle('motion-paused',document.hidden));
   const menuButton = document.querySelector('.menu-button'), menu = document.getElementById('mobile-nav');
   const closeMenu=()=>{ menu.hidden=true; menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open navigation'); };
@@ -65,5 +65,38 @@
   document.querySelectorAll('.project-card').forEach(card=>bindDepth(card,'--card-rx','--card-ry',5));
   let scheduled=false;const updateProgress=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;document.querySelector('.scroll-progress').style.transform='scaleX('+(max>0?window.scrollY/max:0)+')';scheduled=false;};
   window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
-  document.querySelectorAll('a,button').forEach(control=>control.addEventListener('pointerdown',e=>{if(motion.matches)return;const rect=control.getBoundingClientRect();const ripple=el('span','tap-ripple');ripple.style.left=(e.clientX-rect.left-5)+'px';ripple.style.top=(e.clientY-rect.top-5)+'px';ripple.setAttribute('aria-hidden','true');control.append(ripple);ripple.addEventListener('animationend',()=>ripple.remove(),{once:true});}));
+  // Cinematic type remains one accessible label; decorative characters are hidden.
+  document.querySelectorAll('.name-title>span,h2').forEach((heading,index)=>{
+    const label=heading.innerText; heading.setAttribute('aria-label',label);
+    const letters=el('span','kinetic-type'); letters.setAttribute('aria-hidden','true');
+    [...label].forEach((char,i)=>{if(char==='\n'){letters.append(document.createElement('br'));return;}const span=el('span','kinetic-letter',char===' '?'\u00a0':char);span.style.setProperty('--letter',i);letters.append(span);});
+    heading.replaceChildren(letters);heading.classList.add('kinetic-heading');
+  });
+  // Thin corner tracers sit inside the existing surface; no additional blur layers.
+  document.querySelectorAll('.project-card,.info-card,.closing-section,.glass-plane').forEach(surface=>{
+    const frame=el('span','liquid-edges');frame.setAttribute('aria-hidden','true');
+    for(let i=0;i<4;i++){const corner=el('i','edge-corner');corner.style.setProperty('--corner',i);frame.append(corner);}
+    surface.append(frame);
+  });
+  document.querySelectorAll('.hero-copy>.eyebrow,.hero-tagline,.hero-intro,.hero-actions,.hero-foot,.hero-art').forEach((n,i)=>{n.classList.add('enter-layer');n.style.setProperty('--entry',i);});
+  // Run perpetual details only near the viewport, including after scrolling back.
+  if('IntersectionObserver' in window){const activity=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('motion-active',e.isIntersecting)),{rootMargin:'90px'});document.querySelectorAll('.hero,.project-card,.info-card,.closing-section').forEach(n=>activity.observe(n));}
+  // Bounded double-wave refraction and a damped press, for touch AND mouse.
+  document.querySelectorAll('a,button').forEach(control=>{
+    const burst=(event)=>{
+      if(motion.matches)return;
+      const rect=control.getBoundingClientRect();
+      const x=event.clientX===0?rect.width/2:event.clientX-rect.left;
+      const y=event.clientY===0?rect.height/2:event.clientY-rect.top;
+      control.querySelectorAll('.liquid-burst').forEach(n=>n.remove());
+      const wave=el('span','liquid-burst');wave.setAttribute('aria-hidden','true');wave.style.left=x+'px';wave.style.top=y+'px';control.append(wave);
+      const size=Math.min(200,Math.max(rect.width,rect.height)*1.3);
+      const animation=wave.animate([{transform:'translate(-50%,-50%) scale(.05)',opacity:.85},{transform:'translate(-50%,-50%) scale(1)',opacity:0}],{duration:850,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
+      wave.style.width=size+'px';wave.style.height=size+'px';animation.onfinish=()=>wave.remove();window.setTimeout(()=>wave.remove(),1100);
+      if(control.matches('.button,.glass-control,.project-link'))control.animate([{scale:'1'},{scale:'.95',offset:.2},{scale:'1.025',offset:.55},{scale:'1'}],{duration:540,easing:'cubic-bezier(.22,1,.36,1)'});
+    };
+    control.addEventListener('pointerdown',burst,{passive:true});
+    control.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')burst({clientX:0,clientY:0});});
+  });
+  motion.addEventListener('change',()=>{if(motion.matches){document.querySelectorAll('.liquid-burst').forEach(n=>n.remove());document.getAnimations().filter(a=>a.effect?.target?.classList?.contains('liquid-burst')).forEach(a=>a.cancel());}});
 })();

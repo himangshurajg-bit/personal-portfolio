@@ -90,3 +90,45 @@ html:not(.js) .loading-screen{display:none}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .reveal,.js .reveal.visible{opacity:1;transform:none!important}.fluid-cloud{animation:none!important;will-change:auto}.glass-plane{animation:none!important;border-radius:30px}.loading-screen{display:none!important}.scroll-cue-mark{animation:none!important}}
 
 .loading-screen.loaded{animation:none}
+
+/* CINEMATIC LIQUID / motion edition: progressive enhancement, bounded layers. */
+.loader-stage{position:relative;width:126px;height:126px;display:grid;place-items:center;perspective:500px}
+.loading-cube{display:grid;place-items:center;width:64px;height:72px;font:italic 45px var(--serif);letter-spacing:-4px;background:linear-gradient(125deg,#ffffffdc,#9fc9b966);border:1px solid #fff;box-shadow:inset 2px 2px 8px #fff,8px 12px 30px #356c5833;color:#24523e;animation:loader-prism 2.4s ease-in-out infinite}
+.loader-orbit{position:absolute;inset:0;border:1px solid #356c5833;border-top-color:#356c58;border-radius:50%;animation:orbit-loader 2s linear infinite}
+.loader-orbit.orbit-b{inset:12px;animation-direction:reverse;animation-duration:2.8s;border-top-color:transparent;border-right-color:#8bbaa6}
+.loader-caption{font-size:8px;letter-spacing:5px;animation:caption-breathe 1.5s ease-in-out infinite}.loader-label{font:italic 18px var(--serif);letter-spacing:.3px}.loading-screen{gap:18px;animation:loader-failsafe 2s forwards;transition:opacity .5s ease,visibility .5s ease}.loading-screen.loaded{animation:none;opacity:0;visibility:hidden}.loading-track{width:126px}
+@keyframes loader-prism{0%,100%{transform:rotateX(18deg) rotateY(-25deg) rotateZ(-12deg);border-radius:28% 45% 24% 40%}50%{transform:rotateX(-18deg) rotateY(30deg) rotateZ(10deg) translateY(-5px);border-radius:42% 24% 40% 26%}}
+@keyframes orbit-loader{to{transform:rotate(360deg)}}@keyframes caption-breathe{50%{opacity:.45;transform:translateY(2px)}}
+/* Letter bodies are transformed, not blurred, keeping glyphs crisp on phones. */
+.kinetic-type{display:inline!important;font:inherit!important;color:inherit!important;background:none!important;text-shadow:inherit!important;animation:none!important;white-space:nowrap}
+.kinetic-letter{display:inline-block;font:inherit;color:inherit;text-shadow:inherit;transform-origin:50% 95%}
+.js:not(.entered) .name-title .kinetic-letter{opacity:0;transform:translate3d(0,50px,0) rotateX(-85deg) rotateZ(5deg)}
+.js.entered .name-title .kinetic-letter{animation:letter-arrival 1.05s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--letter)*32ms)}
+@keyframes letter-arrival{0%{opacity:0;transform:translate3d(0,50px,0) rotateX(-85deg) rotateZ(5deg)}65%{opacity:1;transform:translate3d(0,-3px,0) rotateX(7deg)}100%{opacity:1;transform:none}}
+.js .reveal h2 .kinetic-letter{opacity:0;transform:translateY(25px) rotateX(-65deg)}
+.js .reveal.visible h2 .kinetic-letter{animation:letter-arrival .85s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--letter)*20ms)}
+.js:not(.entered) .enter-layer{opacity:0;transform:translate3d(0,26px,0) rotateX(8deg)}
+.js.entered .enter-layer{animation:layer-arrival 1.3s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--entry)*90ms + 100ms)}
+@keyframes layer-arrival{from{opacity:0;transform:translate3d(0,26px,0) rotateX(8deg)}to{opacity:1;transform:none}}
+.js .reveal{transform:perspective(1000px) translate3d(0,55px,0) rotateX(7deg) scale(.965);transform-origin:50% 20%;transition:opacity 1s ease var(--reveal-delay,0ms),transform 1.2s cubic-bezier(.16,1,.3,1) var(--reveal-delay,0ms)}
+.js .reveal.visible{transform:none}
+.js .project-card.visible{transform:perspective(1100px) rotateX(var(--card-rx)) rotateY(var(--card-ry))}
+/* Four travelling caustics: compact corner shapes rather than spinning full-size textures. */
+.project-card,.info-card,.closing-section{position:relative;isolation:isolate}
+.liquid-edges{position:absolute;inset:7px;border-radius:inherit;pointer-events:none;z-index:3;overflow:hidden}
+.edge-corner{position:absolute;width:36px;height:36px;border:1px solid transparent;border-top-color:#ffffffdf;border-left-color:#ffffffb3;border-radius:16px 0 0 0;opacity:.7;animation:corner-caustic 6s ease-in-out infinite;animation-delay:calc(var(--corner)*-.9s);animation-play-state:paused}
+.edge-corner:nth-child(1){top:0;left:0}.edge-corner:nth-child(2){top:0;right:0;rotate:90deg}.edge-corner:nth-child(3){bottom:0;right:0;rotate:180deg}.edge-corner:nth-child(4){bottom:0;left:0;rotate:270deg}
+.motion-active .edge-corner,.motion-active>.liquid-edges .edge-corner{animation-play-state:running}
+@keyframes corner-caustic{0%,100%{opacity:.3;transform:translate(0,0) scale(.8)}50%{opacity:1;transform:translate(3px,3px) scale(1.1)}}
+[data-theme="dark"] .edge-corner{border-top-color:#b1e0d0;border-left-color:#8cc7be88}
+.project-visual{perspective:650px}.motion-active .orbit-ring{animation:orbital-precession 12s linear infinite}.motion-active .orbit-ring.two{animation-direction:reverse;animation-duration:17s}.motion-active .orbit-core{animation:core-levitate 5s ease-in-out infinite}.motion-active .lecture-window{animation:window-levitate 7s ease-in-out infinite}
+@keyframes orbital-precession{0%{transform:rotateX(58deg) rotateY(-18deg) rotateZ(0)}100%{transform:rotateX(58deg) rotateY(-18deg) rotateZ(360deg)}}
+@keyframes core-levitate{50%{translate:0 -8px;rotate:-6deg}}@keyframes window-levitate{50%{translate:0 -6px;rotate:1.5deg}}
+.button,.glass-control,.project-link{isolation:isolate;touch-action:manipulation}
+.liquid-burst{position:absolute;pointer-events:none;border-radius:42% 58% 60% 40% / 44% 41% 59% 56%;background:radial-gradient(ellipse,transparent 38%,#f4fffb75 52%,#b0e0d74d 62%,transparent 72%);border:1px solid #ffffff8c;box-shadow:inset 0 0 14px #fff5;z-index:5;max-width:200px;max-height:200px}
+.button:after{content:"";position:absolute;inset:2px;border:1px solid #ffffff3b;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s}
+.button:hover:after,.button:focus-visible:after{opacity:1}.button:active{border-radius:23px 30px 23px 30px}.project-link:hover .link-circle{transform:rotate(-35deg);box-shadow:0 0 0 6px #ffffff24}
+@media(max-width:680px){.liquid-edges{inset:5px}.edge-corner{width:24px;height:24px}.js.entered .name-title .kinetic-letter{animation-duration:.85s}.js .reveal{transform:translate3d(0,36px,0) scale(.98)}.js .reveal.visible{transform:none}.project-card{--card-rx:0deg;--card-ry:0deg}}
+@media(prefers-reduced-motion:reduce){.kinetic-letter,.enter-layer{animation:none!important;opacity:1!important;transform:none!important}.js:not(.entered) .name-title .kinetic-letter,.js:not(.entered) .enter-layer,.js .reveal h2 .kinetic-letter{opacity:1;transform:none}.edge-corner,.loader-orbit,.loading-cube,.loader-caption,.orbit-ring,.orbit-core,.lecture-window{animation:none!important}.liquid-burst{display:none}.button:active{border-radius:inherit}}
+
+h2 .kinetic-type{white-space:normal}.name-title .kinetic-type{white-space:nowrap}
