@@ -65,7 +65,7 @@ The hero keeps the owner's name and “Ideas, made tangible.” immediately read
 Source evidence:
 - Personal-agentic-ai: `3c105217a6e994d89ac50086db5837f83f3dc559`. The screenshot is a real capture of its local Python web studio after previewing a calculation in a fresh temporary database. No real message was sent. There is no hosted assistant backend; its inspectable preview is clearly a screenshot.
 - lecture-slide-finder: `dd1e018a727c0bd752e24b1f2b510be8edcabedd`. Its screenshot is the repository's actual synthetic-lecture test capture. `site/previews/lecture/` contains the built web snapshot, loaded into an iframe only on request, or opened as a full web demo. An embedding-only guard suppresses its beforeunload prompt inside the preview, while retaining the warning at top level. Preview text tells visitors to export notes before closing. Original source, behavior and limitations remain linked. The snapshot uses no UI framework or paid API; no on-device ASR claim is made.
-- Metadata and language snapshots were checked on 20 October 2026. No automatic fetch or activity-feed claim; no invented skill percentages, education dates, achievements, personal learning history, resume or nonfunctional contact form.
+- Metadata and language snapshots were checked on 21 October 2026. No automatic fetch or activity-feed claim; no invented skill percentages, education dates, achievements, personal learning history, resume or nonfunctional contact form.
 
 ### Actual 3D orb explorer
 
@@ -107,9 +107,9 @@ The displayed **Entry readiness** percentage is four equally weighted, actual st
 
 ## Public project refresh — 21 October 2026
 
-- Personal-agentic-ai source pinned to `239a7ae1507c58c08fdcd8f0dd36c34bbcd2ed49`: paginated notebook, Unicode-aware literal matching and notes-only JSONL export. These are development-main features, not additions to existing release packages/APK; exports are plaintext.
+- Personal-agentic-ai source pinned to `5c9cb8cd3609bcee91850751d8bbb3c7f94f4053`: paginated notebook, Unicode-aware literal search, notes-only JSONL export and a Flutter/Dart Android study screen with user-authored offline decks, due reviews and deterministic Again/Hard/Good/Easy intervals. The source-level flashcard flow passed 27 Flutter tests and the hosted API36 run [39580662913](https://github.com/himangshurajg-bit/Personal-agentic-ai/actions/runs/39580662913), including saved-state checks across reload/restart. The private development APK is not a public release; no physical Redmi/HyperOS test or offline model qualification is established. JSONL exports are plaintext.
 - lecture-slide-finder source pinned to `fb9a6f66ce6b4221d911eb36ea7137d65b99720a`, with a separate link to public release `android-v1.00.0.00-stable`. Release notes and `docs/ANDROID16_STATUS.md` establish English/Hindi offline speech and OCR and Android 16 emulator qualification, not physical-phone/older-version qualification. Older contradictory candidate wording remains in parts of the upstream README; the published release and dedicated status record are the source for the stable-release claim.
-- Existing screenshots and the embedded web demo remain dated 20 October snapshots, explicitly distinguished from the newer notebook/native Android app. No private records were used as public portfolio facts.
+- Existing screenshots and the embedded web demo remain dated 20 October snapshots, explicitly distinguished from the newer notebook, Android app and flashcard feature; no private APK is linked. No private records were used as public portfolio facts.
 - Opening/signature, neural home/explorer rendering, motion/quality controls, styles, themes and SEO verification tag are preserved. No additional effect was justified alongside the just-published signature and 100-path Ultra orb; no visual-quality reduction was made.
 - `node tests/daily-projects-check.cjs` checks updated evidence/release links, filters, dated previews, embedded-demo operation, themes, seven responsive widths and no-JavaScript content. Existing home-neural, dense-quality and signature-opening suites cover motion regressions.
 
