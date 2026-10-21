@@ -1,0 +1,21 @@
+/* One-shot glass/light text entrances; real text is always present and selectable. */
+text-run{display:inline}
+text-fragment{display:inline-block;max-width:100%;overflow-wrap:anywhere;vertical-align:baseline}
+text-letter{display:inline-block}
+.text-choreography:not(.text-arrived) text-fragment{opacity:.28;transform:translateY(9px) rotateX(-12deg)}
+.text-arrived text-fragment{animation:text-glass-arrive .85s calc(var(--text-step,0)*.027s) cubic-bezier(.16,.75,.2,1) both}
+.text-arrived text-letter{animation:text-letter-arrive .95s calc(var(--text-step,0)*.06s + var(--letter-step,0)*.022s) cubic-bezier(.16,.8,.2,1) both}
+button.text-arrived text-fragment,a.text-arrived text-fragment,label.text-arrived text-fragment,summary.text-arrived text-fragment{animation-duration:.48s;animation-delay:calc(var(--text-step,0)*.018s)}
+.text-updated text-fragment{animation-name:text-label-arrive;animation-duration:.45s;animation-delay:calc(var(--text-step,0)*.015s)}
+.entry-playing .hero-copy text-fragment{animation:none!important;opacity:1;transform:none}
+@keyframes text-glass-arrive{0%{opacity:.28;transform:translateY(9px) rotateX(-12deg);text-shadow:0 0 15px color-mix(in srgb,var(--accent) 45%,transparent)}60%{opacity:1;text-shadow:0 0 7px color-mix(in srgb,var(--accent) 20%,transparent)}100%{opacity:1;transform:none;text-shadow:none}}
+@keyframes text-letter-arrive{0%{opacity:.3;transform:translateY(.22em) rotateX(-48deg);filter:blur(2px)}65%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:blur(0)}}
+@keyframes text-label-arrive{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* Existing quality/pause and reduced-motion choices still mean no text motion. */
+.ambient-paused text-fragment,.ambient-paused text-letter,.page-asleep text-fragment,.page-asleep text-letter{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
+@media(prefers-reduced-motion:reduce){text-fragment,text-letter{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
+@media print{text-fragment,text-letter{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
+
+/* Transformed glyph layers need their own ink rather than inheriting a transparent ancestor fill. Keep the original gradient, glow and ambient name sheen. */
+.name-title text-letter{color:inherit;background:linear-gradient(112deg,var(--ink) 20%,var(--accent) 47%,var(--ink) 74%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:inherit}
+@media(forced-colors:active){.name-title text-letter{background:none;color:CanvasText;-webkit-text-fill-color:CanvasText}}
