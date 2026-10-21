@@ -19,3 +19,8 @@ button.text-arrived text-fragment,a.text-arrived text-fragment,label.text-arrive
 /* Transformed glyph layers need their own ink rather than inheriting a transparent ancestor fill. Keep the original gradient, glow and ambient name sheen. */
 .name-title text-letter{color:inherit;background:linear-gradient(112deg,var(--ink) 20%,var(--accent) 47%,var(--ink) 74%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:inherit}
 @media(forced-colors:active){.name-title text-letter{background:none;color:CanvasText;-webkit-text-fill-color:CanvasText}}
+
+/* Split glyphs own the clipped ink. Clipping their transformed descendants again
+   on the original line paints duplicate glyphs at the line origin in Chromium.
+   Keep the same gradient/glow on each animated letter, with normal line backing. */
+.name-title>span:has(text-letter){background:none;background-clip:border-box;-webkit-background-clip:border-box;-webkit-text-fill-color:var(--ink)}
