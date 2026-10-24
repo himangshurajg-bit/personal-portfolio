@@ -39,7 +39,22 @@
  const motionToggle=node('button','ambient-toggle','Pause ambient motion');motionToggle.type='button';motionToggle.setAttribute('aria-pressed','false');motionToggle.setAttribute('aria-label','Pause ambient motion');document.body.append(motionToggle);
  let ambientPaused=false;try{ambientPaused=localStorage.getItem('portfolio-ambient-paused')==='true'}catch{}
  const syncMotion=()=>{root.classList.toggle('ambient-paused',ambientPaused);motionToggle.disabled=motion.matches;motionToggle.textContent=motion.matches?'Motion reduced':ambientPaused?'Resume ambient motion':'Pause ambient motion';motionToggle.setAttribute('aria-label',motionToggle.textContent);motionToggle.setAttribute('aria-pressed',String(ambientPaused||motion.matches));};syncMotion();
- motionToggle.addEventListener('click',()=>{ambientPaused=!ambientPaused;try{localStorage.setItem('portfolio-ambient-paused',String(ambientPaused))}catch{}syncMotion()});motion.addEventListener('change',syncMotion);
+ const heroArt=document.querySelector('.hero-art'),tiltPointer=matchMedia('(hover: hover) and (pointer: fine)');let tiltFrame=0,pointerPoint=null;
+ function resetHeroTilt(){cancelAnimationFrame(tiltFrame);tiltFrame=0;pointerPoint=null;scene.style.setProperty('--tilt-x','0deg');scene.style.setProperty('--tilt-y','0deg')}
+ const canTilt=()=>tiltPointer.matches&&!motion.matches&&!ambientPaused&&!document.hidden;
+ if(tiltPointer.matches){
+  heroArt.addEventListener('pointermove',e=>{
+   if(e.pointerType==='touch'||!canTilt()){if(!canTilt())resetHeroTilt();return}
+   pointerPoint={x:e.clientX,y:e.clientY};if(tiltFrame)return;
+   tiltFrame=requestAnimationFrame(()=>{
+    tiltFrame=0;if(!canTilt()||!pointerPoint){resetHeroTilt();return}
+    const b=heroArt.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(pointerPoint.x-b.left-b.width/2)/(b.width/2))),ny=Math.max(-1,Math.min(1,(pointerPoint.y-b.top-b.height/2)/(b.height/2)));
+    scene.style.setProperty('--tilt-x',`${(-ny*2.4).toFixed(2)}deg`);scene.style.setProperty('--tilt-y',`${(nx*3.5).toFixed(2)}deg`)
+   });
+  },{passive:true});
+  heroArt.addEventListener('pointerleave',resetHeroTilt)
+ }
+ motionToggle.addEventListener('click',()=>{ambientPaused=!ambientPaused;try{localStorage.setItem('portfolio-ambient-paused',String(ambientPaused))}catch{}syncMotion();if(ambientPaused)resetHeroTilt()});motion.addEventListener('change',syncMotion);motion.addEventListener('change',()=>{if(!canTilt())resetHeroTilt()});tiltPointer.addEventListener('change',()=>{if(!canTilt())resetHeroTilt()});document.addEventListener('visibilitychange',()=>{if(document.hidden)resetHeroTilt()});
  const calmEffects=()=>motion.matches||ambientPaused;
  const springControl=control=>{if(!control||calmEffects()||control.disabled)return;control.getAnimations().filter(a=>a.id==='touch-spring').forEach(a=>a.cancel());const animation=control.animate([{scale:'1'},{scale:'.94',offset:.24},{scale:'1.035',offset:.52},{scale:'.99',offset:.75},{scale:'1'}],{duration:420,easing:'cubic-bezier(.2,.75,.25,1)'});animation.id='touch-spring';};
  // Two nonblocking glass lenses and viewport-spanning wave fronts, cleaned up after each tap.
