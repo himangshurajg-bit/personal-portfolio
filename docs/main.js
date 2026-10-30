@@ -40,7 +40,8 @@
  let ambientPaused=false;try{ambientPaused=localStorage.getItem('portfolio-ambient-paused')==='true'}catch{}
  const syncMotion=()=>{root.classList.toggle('ambient-paused',ambientPaused);motionToggle.disabled=motion.matches;motionToggle.textContent=motion.matches?'Motion reduced':ambientPaused?'Resume ambient motion':'Pause ambient motion';motionToggle.setAttribute('aria-label',motionToggle.textContent);motionToggle.setAttribute('aria-pressed',String(ambientPaused||motion.matches));};syncMotion();
  const heroArt=document.querySelector('.hero-art'),tiltPointer=matchMedia('(hover: hover) and (pointer: fine)');let tiltFrame=0,pointerPoint=null;
- function resetHeroTilt(){cancelAnimationFrame(tiltFrame);tiltFrame=0;pointerPoint=null;scene.style.setProperty('--tilt-x','0deg');scene.style.setProperty('--tilt-y','0deg')}
+ function setHeroTilt(x,y){scene.style.setProperty('--tilt-x',`${x.toFixed(2)}deg`);scene.style.setProperty('--tilt-y',`${y.toFixed(2)}deg`);const stage=heroArt.querySelector('.hero-neural-stage');if(stage){stage.dataset.tiltX=x.toFixed(2);stage.dataset.tiltY=y.toFixed(2)}}
+ function resetHeroTilt(){cancelAnimationFrame(tiltFrame);tiltFrame=0;pointerPoint=null;setHeroTilt(0,0)}
  const canTilt=()=>tiltPointer.matches&&!motion.matches&&!ambientPaused&&!document.hidden;
  if(tiltPointer.matches){
   heroArt.addEventListener('pointermove',e=>{
@@ -49,7 +50,7 @@
    tiltFrame=requestAnimationFrame(()=>{
     tiltFrame=0;if(!canTilt()||!pointerPoint){resetHeroTilt();return}
     const b=heroArt.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(pointerPoint.x-b.left-b.width/2)/(b.width/2))),ny=Math.max(-1,Math.min(1,(pointerPoint.y-b.top-b.height/2)/(b.height/2)));
-    scene.style.setProperty('--tilt-x',`${(-ny*2.4).toFixed(2)}deg`);scene.style.setProperty('--tilt-y',`${(nx*3.5).toFixed(2)}deg`)
+    setHeroTilt(-ny*2.4,nx*3.5)
    });
   },{passive:true});
   heroArt.addEventListener('pointerleave',resetHeroTilt)
