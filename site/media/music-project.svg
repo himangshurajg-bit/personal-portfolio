@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1050" role="img" aria-labelledby="title desc">
+  <title id="title">Himangshu Music project illustration</title>
+  <desc id="desc">A glass-like music player illustration with an abstract album disc and glowing sound waves. This is project artwork, not an app screenshot.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#102c2d"/><stop offset=".55" stop-color="#183c3b"/><stop offset="1" stop-color="#0c2023"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#62e0cf" stop-opacity=".33"/><stop offset="1" stop-color="#62e0cf" stop-opacity="0"/></radialGradient>
+    <linearGradient id="glass" x2=".8" y2="1"><stop stop-color="#e8fff8" stop-opacity=".24"/><stop offset="1" stop-color="#d7fff2" stop-opacity=".04"/></linearGradient>
+    <linearGradient id="disc" x2="1" y2="1"><stop stop-color="#b7f8e5"/><stop offset=".48" stop-color="#63c9b8"/><stop offset="1" stop-color="#285d61"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="32"/></filter>
+  </defs>
+  <rect width="1440" height="1050" rx="44" fill="url(#bg)"/>
+  <ellipse cx="1070" cy="440" rx="410" ry="390" fill="url(#glow)" filter="url(#blur)"/>
+  <g fill="none" stroke="#8bf4df" stroke-opacity=".25"><circle cx="1050" cy="478" r="305"/><circle cx="1050" cy="478" r="260"/><circle cx="1050" cy="478" r="215"/></g>
+  <g transform="translate(745 155)">
+    <rect width="500" height="630" rx="48" fill="url(#glass)" stroke="#d4fff5" stroke-opacity=".48" stroke-width="3"/>
+    <rect x="24" y="26" width="452" height="578" rx="34" fill="#0b2527" fill-opacity=".52" stroke="#ddfff7" stroke-opacity=".12"/>
+    <circle cx="250" cy="250" r="154" fill="url(#disc)" stroke="#ddfff8" stroke-opacity=".72" stroke-width="3"/>
+    <circle cx="250" cy="250" r="117" fill="none" stroke="#f0fff9" stroke-opacity=".43" stroke-width="2"/>
+    <circle cx="250" cy="250" r="78" fill="none" stroke="#f0fff9" stroke-opacity=".36" stroke-width="2"/>
+    <circle cx="250" cy="250" r="20" fill="#e8fff7" fill-opacity=".9"/>
+    <g stroke="#dcfff7" stroke-linecap="round" stroke-width="8" opacity=".9">
+      <path d="M82 476v-25m28 44v-65m28 87v-105m28 66v-28m28 46v-65m28 88v-110m28 78v-45m28 58v-82m28 59v-38m28 60v-101m28 73v-45m28 64v-78m28 48v-26m28 34v-51m28 38v-25"/>
+    </g>
+    <rect x="111" y="527" width="278" height="5" rx="3" fill="#d4fff7" fill-opacity=".25"/>
+    <rect x="111" y="527" width="158" height="5" rx="3" fill="#a0f1dc"/>
+    <text x="250" y="570" text-anchor="middle" fill="#e9fff9" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">PLAY · DISCOVER · REPEAT</text>
+  </g>
+  <g fill="#e5fff7" font-family="Arial, Helvetica, sans-serif">
+    <text x="115" y="282" font-size="24" letter-spacing="9" fill="#9de9d8">ANDROID MUSIC PLAYER</text>
+    <text x="105" y="430" font-size="78" font-weight="700" letter-spacing="-3">Himangshu</text>
+    <text x="105" y="525" font-size="92" font-weight="700" letter-spacing="-4">Music</text>
+    <text x="112" y="609" font-size="25" fill="#b8d6d1">Offline listening · synced lyrics · custom shortcuts</text>
+  </g>
+  <g transform="translate(118 723)">
+    <rect width="414" height="104" rx="30" fill="#dffef5" fill-opacity=".08" stroke="#d9fff7" stroke-opacity=".24"/>
+    <path d="M51 32v40l34-20z" fill="#a4f3df"/>
+    <text x="113" y="65" fill="#dffef7" font-family="Arial, Helvetica, sans-serif" font-size="23" letter-spacing="3">LATEST · v1.4.8</text>
+  </g>
+</svg>
