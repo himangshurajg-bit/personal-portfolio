@@ -34,6 +34,6 @@
   <g transform="translate(118 723)">
     <rect width="414" height="104" rx="30" fill="#dffef5" fill-opacity=".08" stroke="#d9fff7" stroke-opacity=".24"/>
     <path d="M51 32v40l34-20z" fill="#a4f3df"/>
-    <text x="113" y="65" fill="#dffef7" font-family="Arial, Helvetica, sans-serif" font-size="23" letter-spacing="3">LATEST · v1.4.8</text>
+    <text x="113" y="65" fill="#dffef7" font-family="Arial, Helvetica, sans-serif" font-size="23" letter-spacing="3">LATEST · v1.4.9</text>
   </g>
 </svg>
