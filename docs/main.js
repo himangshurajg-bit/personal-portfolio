@@ -43,6 +43,26 @@
  function setHeroTilt(x,y){scene.style.setProperty('--tilt-x',`${x.toFixed(2)}deg`);scene.style.setProperty('--tilt-y',`${y.toFixed(2)}deg`);const stage=heroArt.querySelector('.hero-neural-stage');if(stage){stage.dataset.tiltX=x.toFixed(2);stage.dataset.tiltY=y.toFixed(2)}}
  function resetHeroTilt(){cancelAnimationFrame(tiltFrame);tiltFrame=0;pointerPoint=null;setHeroTilt(0,0)}
  const canTilt=()=>tiltPointer.matches&&!motion.matches&&!ambientPaused&&!document.hidden;
+ // A single pointer-driven frame gives the project cards a small, inspectable 3D tilt.
+ const cardTiltPointer=matchMedia('(hover: hover) and (pointer: fine)');let cardTiltFrame=0,cardPointerPoint=null;
+ const canCardTilt=()=>cardTiltPointer.matches&&!motion.matches&&!ambientPaused&&!document.hidden;
+ function resetCardTilt(card){if(cardPointerPoint?.card===card){cancelAnimationFrame(cardTiltFrame);cardTiltFrame=0;cardPointerPoint=null}card.style.setProperty('--card-rx','0deg');card.style.setProperty('--card-ry','0deg');card.classList.remove('card-tilting')}
+ function resetCardTilts(){cards.forEach(resetCardTilt)}
+ cards.forEach(card=>{
+  card.addEventListener('pointermove',e=>{
+   if(e.pointerType==='touch')return;
+   if(!canCardTilt()){resetCardTilt(card);return}
+   cardPointerPoint={card,x:e.clientX,y:e.clientY};if(cardTiltFrame)return;
+   cardTiltFrame=requestAnimationFrame(()=>{
+    cardTiltFrame=0;const point=cardPointerPoint;
+    if(!point||!canCardTilt()){resetCardTilts();return}
+    const r=point.card.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(point.x-r.left-r.width/2)/(r.width/2))),ny=Math.max(-1,Math.min(1,(point.y-r.top-r.height/2)/(r.height/2)));
+    point.card.style.setProperty('--card-rx',`${(-ny*3.5).toFixed(2)}deg`);point.card.style.setProperty('--card-ry',`${(nx*4.5).toFixed(2)}deg`);point.card.classList.add('card-tilting')
+   });
+  },{passive:true});
+  card.addEventListener('pointerleave',()=>resetCardTilt(card));
+ });
+ cardTiltPointer.addEventListener('change',()=>{if(!canCardTilt())resetCardTilts()});
  if(tiltPointer.matches){
   heroArt.addEventListener('pointermove',e=>{
    if(e.pointerType==='touch'||!canTilt()){if(!canTilt())resetHeroTilt();return}
@@ -55,7 +75,7 @@
   },{passive:true});
   heroArt.addEventListener('pointerleave',resetHeroTilt)
  }
- motionToggle.addEventListener('click',()=>{ambientPaused=!ambientPaused;try{localStorage.setItem('portfolio-ambient-paused',String(ambientPaused))}catch{}syncMotion();if(ambientPaused)resetHeroTilt()});motion.addEventListener('change',syncMotion);motion.addEventListener('change',()=>{if(!canTilt())resetHeroTilt()});tiltPointer.addEventListener('change',()=>{if(!canTilt())resetHeroTilt()});document.addEventListener('visibilitychange',()=>{if(document.hidden)resetHeroTilt()});
+ motionToggle.addEventListener('click',()=>{ambientPaused=!ambientPaused;try{localStorage.setItem('portfolio-ambient-paused',String(ambientPaused))}catch{}syncMotion();if(ambientPaused){resetHeroTilt();resetCardTilts()}});motion.addEventListener('change',syncMotion);motion.addEventListener('change',()=>{if(!canTilt())resetHeroTilt();if(!canCardTilt())resetCardTilts()});tiltPointer.addEventListener('change',()=>{if(!canTilt())resetHeroTilt()});document.addEventListener('visibilitychange',()=>{if(document.hidden){resetHeroTilt();resetCardTilts()}});
  const calmEffects=()=>motion.matches||ambientPaused;
  const springControl=control=>{if(!control||calmEffects()||control.disabled)return;control.getAnimations().filter(a=>a.id==='touch-spring').forEach(a=>a.cancel());const animation=control.animate([{scale:'1'},{scale:'.94',offset:.24},{scale:'1.035',offset:.52},{scale:'.99',offset:.75},{scale:'1'}],{duration:420,easing:'cubic-bezier(.2,.75,.25,1)'});animation.id='touch-spring';};
  // Two nonblocking glass lenses and viewport-spanning wave fronts, cleaned up after each tap.

@@ -367,3 +367,8 @@ body{isolation:isolate}
 /* Keep the orb explorer action in the mobile hero copy, clear of fixed motion controls. */
 .orb-open-mobile{display:none!important}
 @media(max-width:680px){.hero-copy{padding-top:30px;padding-bottom:8px}.name-title{margin-top:18px;margin-bottom:12px}.hero-tagline{margin-bottom:12px}.hero-intro{line-height:1.6;margin-bottom:16px}.hero-foot{margin-top:18px}.hero-art>#orb-open{display:none!important}.hero-copy>#orb-open-mobile{position:relative;left:auto;bottom:auto;transform:none;display:inline-flex!important;margin-top:14px;vertical-align:top}}
+
+/* Fine-pointer 3D project-card tilt; touch and reduced-motion stay unchanged. */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .project-card.card-tilting:hover{transform:perspective(1100px) translateY(-5px) rotateX(var(--card-rx)) rotateY(var(--card-ry))!important}
+}
