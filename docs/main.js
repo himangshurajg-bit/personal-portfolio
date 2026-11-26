@@ -46,7 +46,7 @@
  // A single pointer-driven frame gives the project cards a small, inspectable 3D tilt.
  const cardTiltPointer=matchMedia('(hover: hover) and (pointer: fine)');let cardTiltFrame=0,cardPointerPoint=null;
  const canCardTilt=()=>cardTiltPointer.matches&&!motion.matches&&!ambientPaused&&!document.hidden;
- function resetCardTilt(card){if(cardPointerPoint?.card===card){cancelAnimationFrame(cardTiltFrame);cardTiltFrame=0;cardPointerPoint=null}card.style.setProperty('--card-rx','0deg');card.style.setProperty('--card-ry','0deg');card.classList.remove('card-tilting')}
+ function resetCardTilt(card){if(cardPointerPoint?.card===card){cancelAnimationFrame(cardTiltFrame);cardTiltFrame=0;cardPointerPoint=null}card.style.setProperty('--card-rx','0deg');card.style.setProperty('--card-ry','0deg');card.style.setProperty('--card-light-x','50%');card.style.setProperty('--card-light-y','50%');card.classList.remove('card-tilting','card-lighting')}
  function resetCardTilts(){cards.forEach(resetCardTilt)}
  cards.forEach(card=>{
   card.addEventListener('pointermove',e=>{
@@ -57,7 +57,9 @@
     cardTiltFrame=0;const point=cardPointerPoint;
     if(!point||!canCardTilt()){resetCardTilts();return}
     const r=point.card.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(point.x-r.left-r.width/2)/(r.width/2))),ny=Math.max(-1,Math.min(1,(point.y-r.top-r.height/2)/(r.height/2)));
-    point.card.style.setProperty('--card-rx',`${(-ny*3.5).toFixed(2)}deg`);point.card.style.setProperty('--card-ry',`${(nx*4.5).toFixed(2)}deg`);point.card.classList.add('card-tilting')
+    point.card.style.setProperty('--card-rx',`${(-ny*3.5).toFixed(2)}deg`);point.card.style.setProperty('--card-ry',`${(nx*4.5).toFixed(2)}deg`);point.card.classList.add('card-tilting');
+    const visual=point.card.querySelector('.project-visual'),v=visual?.getBoundingClientRect();
+    if(v&&v.width>0&&v.height>0&&point.x>=v.left&&point.x<=v.right&&point.y>=v.top&&point.y<=v.bottom){point.card.style.setProperty('--card-light-x',`${(point.x-v.left).toFixed(1)}px`);point.card.style.setProperty('--card-light-y',`${(point.y-v.top).toFixed(1)}px`);point.card.classList.add('card-lighting')}else point.card.classList.remove('card-lighting')
    });
   },{passive:true});
   card.addEventListener('pointerleave',()=>resetCardTilt(card));
