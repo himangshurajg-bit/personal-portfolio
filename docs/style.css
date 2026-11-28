@@ -377,6 +377,7 @@ body{isolation:isolate}
 @media (prefers-reduced-motion:reduce){
  .section-heading h2::after,.about-heading h2::after{transition:none!important}
 }
+.ambient-paused .section-heading h2::after,.ambient-paused .about-heading h2::after{transition:none!important}
 
 /* Fine-pointer 3D project-card tilt; touch and reduced-motion stay unchanged. */
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){

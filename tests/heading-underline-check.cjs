@@ -12,6 +12,18 @@ const fs=require('fs'),http=require('http'),path=require('path'),assert=require(
   await page.waitForTimeout(900);
   const after=await page.evaluate(()=>getComputedStyle(document.querySelector('.section-heading h2'),'::after').transform);
   assert.notEqual(after,'none');console.log('PASS heading underline wipe animates on reveal (before:',before,'after:',after,')');
+  await page.locator('.ambient-toggle').click();
+  await page.waitForFunction(()=>document.documentElement.classList.contains('ambient-paused'));
+  const pausedTransition=await page.evaluate(()=>getComputedStyle(document.querySelector('.section-heading h2'),'::after').transitionDuration);
+  assert.equal(pausedTransition,'0s','ambient pause should disable heading underline transition');
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.evaluate(()=>window.scrollTo(0,document.querySelector('.section-heading').offsetTop));
+  await page.waitForTimeout(300);
+  const pausedTransform=await page.evaluate(()=>getComputedStyle(document.querySelector('.section-heading h2'),'::after').transform);
+  assert.equal(pausedTransform,'matrix(1, 0, 0, 1, 0, 0)','paused wipe should land instantly at full width');
+  console.log('PASS ambient pause disables heading underline animation (instant full width)');
+  await page.locator('.ambient-toggle').click();
+  await page.waitForFunction(()=>!document.documentElement.classList.contains('ambient-paused'));
   await ctx.close();
   const reduced=await browser.newContext({viewport:{width:1440,height:1100},reducedMotion:'reduce'}),rp=await reduced.newPage();
   await rp.goto(url,{waitUntil:'networkidle'});
